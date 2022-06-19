@@ -252,7 +252,7 @@ func (man *LibraryManager) RecursiveProbe(rootNode filesystem.Node) {
 
 	rootNode.Walk(func(walkPath string, n filesystem.Node, err error) error {
 		p := filepath.Base(n.Path())
-		if n.IsDir() && p[0] == '.' && !viper.GetBool("metadata.scan_hidden") {
+		if n.IsDir() && p[0] == '.' && !viper.GetBool("metadata.scanHidden") {
 			log.WithFields(log.Fields{"path": p, "fullPath": n.Path()}).Warnln("skipping hidden folder, if you want to index it please set metadata.scan_hidden to true.")
 			return filepath.SkipDir
 		}

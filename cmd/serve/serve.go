@@ -3,11 +3,11 @@ package serve
 import (
 	"context"
 	"fmt"
+	"gitlab.com/olaris/olaris-server/interfaces/web"
 	"net/http"
 	_ "net/http/pprof" // For Profiling
 	"os"
 	"os/signal"
-	"path"
 	"time"
 
 	"gitlab.com/olaris/olaris-server/helpers"
@@ -23,47 +23,47 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"gitlab.com/olaris/olaris-server/metadata"
 	"gitlab.com/olaris/olaris-server/metadata/agents"
 	"gitlab.com/olaris/olaris-server/metadata/app"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 	"gitlab.com/olaris/olaris-server/react"
 	"gitlab.com/olaris/olaris-server/streaming"
 )
 
-type ServeCommand cmd.Command
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		streaming.Options(),
-		di.Provide(NewServeCommand, di.As(new(ServeCommand))),
+		di.Provide(NewServeCommand, di.Tags{"type": "serve"}),
 		di.Invoke(RegisterServeCommand),
 	)
 }
 
-func RegisterServeCommand(rootCommand root.RootCommand, serveCommand ServeCommand) {
-	rootCommand.GetCobraCommand().AddCommand(serveCommand.GetCobraCommand())
-
-	rootCommand.GetCobraCommand().Flags().AddFlagSet(serveCommand.GetCobraCommand().Flags())
-	rootCommand.GetCobraCommand().Run = serveCommand.GetCobraCommand().Run
-}
-
-// Parameters contains the parameters that are required when creating a new
-// serve command.
-type Parameters struct {
+func RegisterServeCommand(deps struct {
 	di.Inject
-
-	StreamingController web.Controller `di:"type=streaming"`
+	RootCommand  *cobra.Command `di:"type=root"`
+	ServeCommand *cobra.Command `di:"type=serve"`
+}) {
+	deps.RootCommand.AddCommand(deps.ServeCommand)
 }
 
-func NewServeCommand(params *Parameters) *cmd.CobraCommand {
+func NewServeCommand(deps struct {
+	di.Inject
+	StreamingController web.Controller `di:"type=streaming"`
+}) *cobra.Command {
 	c := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the olaris server",
-		Run: func(cmd *cobra.Command, args []string) {
+		PreRun: func(cmd *cobra.Command, args []string) {
+			_ = viper.BindPFlag("server.port", cmd.Flags().Lookup("port"))
+			_ = viper.BindPFlag("server.dbLog", cmd.Flags().Lookup("db-log"))
+			_ = viper.BindPFlag("server.sqliteDir", cmd.Flags().Lookup("sqlite-dir"))
+			_ = viper.BindPFlag("database.connection", cmd.Flags().Lookup("db-conn"))
+			_ = viper.BindPFlag("metadata.scanHidden", cmd.Flags().Lookup("scan-hidden"))
+			_ = viper.BindPFlag("server.zeroconf.enabled", cmd.Flags().Lookup("zeroconf-enabled"))
+			_ = viper.BindPFlag("server.zeroconf.domain", cmd.Flags().Lookup("zeroconf-domain"))
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if viper.GetBool("server.verbose") {
 				log.SetLevel(log.DebugLevel)
 			}
@@ -100,7 +100,7 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 
 			dbOptions := db.DatabaseOptions{
 				Connection: viper.GetString("database.connection"),
-				LogMode:    viper.GetBool("server.DBLog"),
+				LogMode:    viper.GetBool("server.dbLog"),
 			}
 
 			mctx := app.NewMDContext(dbOptions, agents.NewTmdbAgent())
@@ -116,7 +116,7 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 				} else {
 					log.SetLevel(log.InfoLevel)
 				}
-				mctx.Db.LogMode(viper.GetBool("server.DBLog"))
+				mctx.Db.LogMode(viper.GetBool("server.dbLog"))
 			}
 			viper.OnConfigChange(updateConfig)
 
@@ -124,7 +124,7 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 			metadata.RegisterRoutes(mctx, metaRouter)
 
 			streamingRouter := rr.PathPrefix("/s").Subrouter()
-			params.StreamingController.RegisterRoutes(streamingRouter)
+			deps.StreamingController.RegisterRoutes(streamingRouter)
 
 			// This is just to make sure that no temp files stay behind in case the
 			// garbage collection below didn't work properly for some reason.
@@ -134,7 +134,6 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 			port := viper.GetInt("server.port")
 
 			if viper.GetBool("server.zeroconf.enabled") {
-				viper.SetDefault("server.zeroconf.domain", "local.")
 				domain := viper.GetString("server.zeroconf.domain")
 				zeroconfService, err := zeroconf.Register("olaris", "_http._tcp", domain, port, []string{"txtv=0", "lo=1", "la=2"}, nil)
 				if err != nil {
@@ -185,22 +184,18 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 			srv.Shutdown(ctx)
 
 			log.Println("shut down complete, exiting.")
+			return nil
 		},
 	}
 
 	c.Flags().IntP("port", "p", 8080, "http port")
 	c.Flags().BoolP("verbose", "v", true, "verbose logging")
+	c.Flags().Bool("scan-hidden", false, "sets whether to scan hidden directories (directories starting with a .)")
 	c.Flags().Bool("db-log", false, "sets whether the database should log queries")
 	c.Flags().String("db-conn", "", "sets the database connection string")
-	c.Flags().String("sqlite_dir", path.Join(helpers.BaseConfigDir(), "metadb"), "Path where the SQLite database should be stored")
-	c.Flags().Bool("scan-hidden", false, "sets whether to scan hidden directories (directories starting with a .)")
+	c.Flags().String("sqlite-dir", "", "Path where the database is stored if using SQLite. (defaults to <config_dir>/metadb)")
+	c.Flags().Bool("zeroconf-enabled", false, "enables the zeroconf service")
+	c.Flags().String("zeroconf-domain", "local.", "sets the domain for the zeroconf service if it is enabled")
 
-	viper.BindPFlag("server.port", c.Flags().Lookup("port"))
-	viper.BindPFlag("server.verbose", c.Flags().Lookup("verbose"))
-	viper.BindPFlag("server.DBLog", c.Flags().Lookup("db-log"))
-	viper.BindPFlag("server.sqliteDir", c.Flags().Lookup("sqlite_dir"))
-	viper.BindPFlag("database.connection", c.Flags().Lookup("db-conn"))
-	viper.BindPFlag("metadata.scan_hidden", c.Flags().Lookup("scan-hidden"))
-
-	return &cmd.CobraCommand{Command: c}
+	return c
 }

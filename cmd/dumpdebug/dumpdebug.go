@@ -14,25 +14,25 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
-type DumpDebugCommand cmd.Command
-
-func RegisterDumpDebugCommand(rootCommand root.RootCommand, dumpDebugCommand DumpDebugCommand) {
-	rootCommand.GetCobraCommand().AddCommand(dumpDebugCommand.GetCobraCommand())
-}
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewDumpDebugCommand, di.As(new(DumpDebugCommand))),
+		di.Provide(NewDumpDebugCommand, di.Tags{"type": "dumpdebug"}),
 		di.Invoke(RegisterDumpDebugCommand),
 	)
 }
 
-func NewDumpDebugCommand() *cmd.CobraCommand {
+func RegisterDumpDebugCommand(deps struct {
+	di.Inject
+	RootCommand      *cobra.Command `di:"type=root"`
+	DumpDebugCommand *cobra.Command `di:"type=dumpdebug"`
+}) {
+	deps.RootCommand.AddCommand(deps.DumpDebugCommand)
+}
+
+func NewDumpDebugCommand() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "dumpdebug",
 		Short: "Dump all data for debugging purposes",
@@ -60,7 +60,7 @@ func NewDumpDebugCommand() *cmd.CobraCommand {
 		},
 	}
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }
 
 func writeFilesInDir(w *zip.Writer, dir string, prefix string) error {

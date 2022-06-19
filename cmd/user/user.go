@@ -2,28 +2,29 @@ package user
 
 import (
 	"errors"
+	"gitlab.com/olaris/olaris-server/cmd/user/user_create"
 
 	"github.com/goava/di"
 	"github.com/spf13/cobra"
-
-	"gitlab.com/olaris/olaris-server/cmd/root"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
-type UserCommand cmd.Command
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewUserCommand, di.As(new(UserCommand))),
+		di.Provide(NewUserCommand, di.Tags{"type": "user"}),
 		di.Invoke(RegisterUserCommand),
+		user_create.Options(),
 	)
 }
 
-func RegisterUserCommand(rootCommand root.RootCommand, userCommand UserCommand) {
-	rootCommand.GetCobraCommand().AddCommand(userCommand.GetCobraCommand())
+func RegisterUserCommand(deps struct {
+	di.Inject
+	RootCommand    *cobra.Command `di:"type=root"`
+	NewUserCommand *cobra.Command `di:"type=user"`
+}) {
+	deps.RootCommand.AddCommand(deps.NewUserCommand)
 }
 
-func NewUserCommand() *cmd.CobraCommand {
+func NewUserCommand() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "user",
 		Short: "Manage users",
@@ -32,5 +33,5 @@ func NewUserCommand() *cmd.CobraCommand {
 		},
 	}
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }

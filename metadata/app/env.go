@@ -41,7 +41,7 @@ var env *MetadataContext
 
 // NewDefaultMDContext creates a new env with sane defaults.
 func NewDefaultMDContext() *MetadataContext {
-	dbDir := viper.GetString("sqliteDir")
+	dbDir := viper.GetString("server.sqliteDir")
 	helpers.EnsurePath(dbDir)
 
 	dbPath := path.Join(dbDir, "metadata.db")

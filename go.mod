@@ -26,9 +26,9 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/snowzach/rotatefilehook v0.0.0-20180327172521-2f64f265f58c
 	github.com/spf13/cobra v1.3.0
-	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.0
+	gitlab.com/olaris/olaris-rename v0.0.0-20220622131304-0c4097cdf6c6
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486
 	gopkg.in/gormigrate.v1 v1.6.0
 )

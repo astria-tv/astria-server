@@ -1,33 +1,36 @@
 package library_create
 
 import (
+	"github.com/spf13/viper"
+	"gitlab.com/olaris/olaris-server/helpers"
+	"path"
 	"time"
 
 	"github.com/goava/di"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/metadata/app"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
 const defaultTimeOffset = -24 * time.Hour
 
-type LibraryCreateCommand cmd.Command
-
-func RegisterLibraryCreateCommand(rootCommand root.RootCommand, libraryCreateCommand LibraryCreateCommand) {
-	rootCommand.GetCobraCommand().AddCommand(libraryCreateCommand.GetCobraCommand())
-}
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewLibraryCreateCommand, di.As(new(LibraryCreateCommand))),
+		di.Provide(NewLibraryCreateCommand, di.Tags{"type": "library_create"}),
 		di.Invoke(RegisterLibraryCreateCommand),
 	)
 }
 
-func NewLibraryCreateCommand() *cmd.CobraCommand {
+func RegisterLibraryCreateCommand(deps struct {
+	di.Inject
+	LibraryCommand       *cobra.Command `di:"type=library"`
+	LibraryCreateCommand *cobra.Command `di:"type=library_create"`
+}) {
+	deps.LibraryCommand.AddCommand(deps.LibraryCreateCommand)
+}
+
+func NewLibraryCreateCommand() *cobra.Command {
 	var name string
 	var filePath string
 	var mediaType int
@@ -37,6 +40,12 @@ func NewLibraryCreateCommand() *cmd.CobraCommand {
 	c := &cobra.Command{
 		Use:   "create",
 		Short: "Create a new library",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			_ = viper.BindPFlag("server.dbLog", cmd.Flags().Lookup("db-log"))
+			_ = viper.BindPFlag("server.sqliteDir", cmd.Flags().Lookup("sqlite_dir"))
+			_ = viper.BindPFlag("database.connection", cmd.Flags().Lookup("db-conn"))
+			_ = viper.BindPFlag("metadata.scanHidden", cmd.Flags().Lookup("scan-hidden"))
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			mctx := app.NewDefaultMDContext()
 			defer mctx.Db.Close()
@@ -62,10 +71,9 @@ func NewLibraryCreateCommand() *cmd.CobraCommand {
 	c.Flags().IntVar(&backendType, "backend_type", 0, "Backend type, 0 for Local, 1 for Rclone")
 	c.Flags().StringVar(&rcloneName, "rclone_name", "", "Name for the Rclone remote")
 
-	c.Flags().IntP("port", "p", 8080, "http port")
-	c.Flags().BoolP("verbose", "v", true, "verbose logging")
 	c.Flags().Bool("db-log", false, "sets whether the database should log queries")
 	c.Flags().String("db-conn", "", "sets the database connection string")
+	c.Flags().String("sqlite-dir", path.Join(helpers.BaseConfigDir(), "metadb"), "Path where the database is stored if using SQLite")
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }

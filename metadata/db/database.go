@@ -34,6 +34,10 @@ type DatabaseOptions struct {
 
 func getDefaultDbPath() (string, error) {
 	dbDir := viper.GetString("server.sqliteDir")
+	if dbDir == "" {
+		dbDir = path.Join(viper.GetString("server.configDir"), "metadb")
+	}
+
 	if err := helpers.EnsurePath(dbDir); err != nil {
 		return "", err
 	}

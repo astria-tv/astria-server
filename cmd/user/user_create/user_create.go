@@ -4,26 +4,26 @@ import (
 	"github.com/goava/di"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/cmd/user"
 	"gitlab.com/olaris/olaris-server/metadata/app"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
-type UserCreateCommand cmd.Command
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewUserCreateCommand, di.As(new(UserCreateCommand))),
+		di.Provide(NewUserCreateCommand, di.Tags{"type": "user_create"}),
 		di.Invoke(RegisterUserCreateCommand),
 	)
 }
 
-func RegisterUserCreateCommand(userCommand user.UserCommand, userCreateCommand UserCreateCommand) {
-	userCommand.GetCobraCommand().AddCommand(userCreateCommand.GetCobraCommand())
+func RegisterUserCreateCommand(deps struct {
+	di.Inject
+	UserCommand       *cobra.Command `di:"type=user"`
+	UserCreateCommand *cobra.Command `di:"type=user_create"`
+}) {
+	deps.UserCommand.AddCommand(deps.UserCreateCommand)
 }
 
-func NewUserCreateCommand() *cmd.CobraCommand {
+func NewUserCreateCommand() *cobra.Command {
 	var username string
 	var password string
 	var admin bool
@@ -49,5 +49,5 @@ func NewUserCreateCommand() *cmd.CobraCommand {
 
 	c.Flags().BoolVar(&admin, "admin", false, "Whether the new user should be an admin")
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }
