@@ -51,17 +51,17 @@ func NewServeCommand(deps struct {
 	di.Inject
 	StreamingController web.Controller `di:"type=streaming"`
 }) *cobra.Command {
+	registerMetadataFlags, registerMetadataViper := metadata.FlagFuncs()
+
 	c := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the olaris server",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			_ = viper.BindPFlag("server.port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("server.dbLog", cmd.Flags().Lookup("db-log"))
-			_ = viper.BindPFlag("server.sqliteDir", cmd.Flags().Lookup("sqlite-dir"))
-			_ = viper.BindPFlag("database.connection", cmd.Flags().Lookup("db-conn"))
-			_ = viper.BindPFlag("metadata.scanHidden", cmd.Flags().Lookup("scan-hidden"))
 			_ = viper.BindPFlag("server.zeroconf.enabled", cmd.Flags().Lookup("zeroconf-enabled"))
 			_ = viper.BindPFlag("server.zeroconf.domain", cmd.Flags().Lookup("zeroconf-domain"))
+			_ = registerMetadataViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if viper.GetBool("server.verbose") {
@@ -189,13 +189,10 @@ func NewServeCommand(deps struct {
 	}
 
 	c.Flags().IntP("port", "p", 8080, "http port")
-	c.Flags().BoolP("verbose", "v", true, "verbose logging")
-	c.Flags().Bool("scan-hidden", false, "sets whether to scan hidden directories (directories starting with a .)")
 	c.Flags().Bool("db-log", false, "sets whether the database should log queries")
-	c.Flags().String("db-conn", "", "sets the database connection string")
-	c.Flags().String("sqlite-dir", "", "Path where the database is stored if using SQLite. (defaults to <config_dir>/metadb)")
 	c.Flags().Bool("zeroconf-enabled", false, "enables the zeroconf service")
 	c.Flags().String("zeroconf-domain", "local.", "sets the domain for the zeroconf service if it is enabled")
+	_ = registerMetadataFlags(c)
 
 	return c
 }
