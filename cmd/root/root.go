@@ -19,8 +19,8 @@ func NewRootCommand() *cobra.Command {
 	c := &cobra.Command{
 		Use: "olaris",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			_ = viper.BindPFlag("config.dir", cmd.Flags().Lookup("config_dir"))
 			_ = viper.BindPFlag("server.cacheDir", cmd.Flags().Lookup("cache_dir"))
-			_ = viper.BindPFlag("server.configDir", cmd.Flags().Lookup("config_dir"))
 			_ = viper.BindPFlag("server.verbose", cmd.Flags().Lookup("verbose"))
 			_ = viper.BindPFlag("server.directFileAccess", cmd.Flags().Lookup("allow_direct_file_access"))
 			_ = viper.BindPFlag("debug.streamingPages", cmd.Flags().Lookup("enable_streaming_debug_pages"))
@@ -32,7 +32,7 @@ func NewRootCommand() *cobra.Command {
 			viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 			viper.SetEnvPrefix("olaris")
 			viper.AutomaticEnv()
-			viper.AddConfigPath(viper.GetString("server.configDir"))
+			viper.AddConfigPath(viper.GetString("config.dir"))
 		},
 	}
 

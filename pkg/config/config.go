@@ -28,7 +28,6 @@ type Server struct {
 	DBLog            bool
 	SQLiteDir        string
 	CacheDir         string
-	ConfigDir        string
 	DirectFileAccess bool
 }
 
