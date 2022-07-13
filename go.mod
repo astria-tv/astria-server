@@ -28,7 +28,7 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.0
-	gitlab.com/olaris/olaris-rename v0.0.0-20220622131304-0c4097cdf6c6
+	gitlab.com/olaris/olaris-rename v0.0.0-20220629071935-c44ace6d9152
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486
 	gopkg.in/gormigrate.v1 v1.6.0
 )
@@ -118,6 +118,7 @@ require (
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/t3rm1n4l/go-mega v0.0.0-20200416171014-ffad7fcb44b8 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
@@ -127,7 +128,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/yunify/qingstor-sdk-go/v3 v3.2.0 // indirect
 	github.com/zeebo/errs v1.2.2 // indirect
-	gitlab.com/olaris/olaris-rename v0.0.0-20220629071935-c44ace6d9152 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

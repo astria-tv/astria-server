@@ -3,15 +3,11 @@ package serve
 import (
 	"context"
 	"fmt"
-	"gitlab.com/olaris/olaris-server/interfaces/web"
 	"net/http"
 	_ "net/http/pprof" // For Profiling
 	"os"
 	"os/signal"
 	"time"
-
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/interfaces/web"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/goava/di"
@@ -24,6 +20,7 @@ import (
 	"github.com/spf13/viper"
 
 	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"gitlab.com/olaris/olaris-server/interfaces/web"
 	"gitlab.com/olaris/olaris-server/metadata"
 	"gitlab.com/olaris/olaris-server/metadata/agents"
 	"gitlab.com/olaris/olaris-server/metadata/app"
