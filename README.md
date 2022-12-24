@@ -39,20 +39,7 @@ Replace the name of the zipfile with the name of the file you downloaded.
 
 Olaris can be configured via configuration file, environment variables, or command-line flags. An `olaris.toml.sample` configuration file is included in the `docs/` folder; rename it to `olaris.toml` and place in `$HOME/.config/olaris`. You can also override the configuration directory location with the `OLARIS_CONFIG_DIR` environment variable or the `--config_dir` command-line flag.
 
-If you want to configure Olaris using environment variables, the variables currently supported are listed below.
-
-- `OLARIS_CONFIG_DIR`: default configuration file directory (including database files)
-- `OLARIS_DEBUG_STREAMINGPAGES`: whether to enable debug pages in the streaming server (default false, overrides the `debug.streamingPages` configuration value)
-- `OLARIS_DEBUG_TRANSCODERLOG`: whether to write transcoder output to logfile (default true, overrides the `debug.streamingPages` value from configuration file)
-- `OLARIS_SERVER_PORT`: http port (default 8080, overrides the `server.port` configuration value)
-- `OLARIS_SERVER_VERBOSE`: verbose logging (default true, overrides the `server.verbose` configuration value)
-- `OLARIS_SERVER_DIRECTFILEACCESS`: whether accessing files directly by path (without a valid JWT) is allowed (default false, overrides the `server.directFileAccess` configuration value)
-- `OLARIS_DATABASE_CONNECTION`: the database connection string Olaris should use to store metadata for the libraries (default to the default SQLite file path, overrides the `database.connection` configuration value). The connection string has to be in the following format: `engine://<connection string data>`. The connection string data can be different for each database, please refer to [GORM's documentation](https://gorm.io/docs/connecting_to_the_database.html) for more information about compatible databases.
-    - For example, `mysql://user:password@/dbname?charset=utf8&parseTime=True&loc=Local`
-
-Configuration file settings override the defaults in the code.
-Environment variable settings override the settings found in the configuration file.
-Command-line arguments override everything; run `olaris help` to see the command-line documentation.
+The configuration options available are documented in [CONFIGURATION.md](CONFIGURATION.md).
 
 #### Run as daemon using systemd
 
