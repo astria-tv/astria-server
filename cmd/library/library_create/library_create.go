@@ -42,7 +42,7 @@ func NewLibraryCreateCommand() *cobra.Command {
 		Short: "Create a new library",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			_ = viper.BindPFlag("server.dbLog", cmd.Flags().Lookup("db-log"))
-			_ = viper.BindPFlag("server.sqliteDir", cmd.Flags().Lookup("sqlite_dir"))
+			_ = viper.BindPFlag("server.sqliteDir", cmd.Flags().Lookup("sqlite-dir"))
 			_ = viper.BindPFlag("database.connection", cmd.Flags().Lookup("db-conn"))
 			_ = viper.BindPFlag("metadata.scanHidden", cmd.Flags().Lookup("scan-hidden"))
 		},
@@ -67,9 +67,9 @@ func NewLibraryCreateCommand() *cobra.Command {
 	c.Flags().StringVar(&filePath, "path", "", "Path for this library")
 	c.MarkFlagRequired("path")
 
-	c.Flags().IntVar(&mediaType, "media_type", 0, "Media type, 0 for Movies, 1 for Series")
-	c.Flags().IntVar(&backendType, "backend_type", 0, "Backend type, 0 for Local, 1 for Rclone")
-	c.Flags().StringVar(&rcloneName, "rclone_name", "", "Name for the Rclone remote")
+	c.Flags().IntVar(&mediaType, "media-type", 0, "Media type, 0 for Movies, 1 for Series")
+	c.Flags().IntVar(&backendType, "backend-type", 0, "Backend type, 0 for Local, 1 for Rclone")
+	c.Flags().StringVar(&rcloneName, "rclone-name", "", "Name for the Rclone remote")
 
 	c.Flags().Bool("db-log", false, "sets whether the database should log queries")
 	c.Flags().String("db-conn", "", "sets the database connection string")
