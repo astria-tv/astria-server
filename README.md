@@ -1,10 +1,10 @@
-![Olaris server header](https://i.imgur.com/ewz5TAN.png)
+![Astria server header](assets/logo/Color%20logo%20with%20background.png)
 
 ## `This is all pre-release code, continue at your own peril.`
 
-## What is Olaris?
+## What is Astria?
 
-Olaris is an open-source, community driven, media manager and transcoding server. The main interface is the [olaris-react](https://gitlab.com/olaris/olaris-react) project although in due time we hope to support multiple clients / applications.
+Astria is an open-source, community driven, media manager and transcoding server. The main interface is the [olaris-react](https://gitlab.com/olaris/olaris-react) project although in due time we hope to support multiple clients / applications.
 
 Our core values are:
 
