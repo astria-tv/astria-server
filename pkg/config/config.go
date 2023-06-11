@@ -1,45 +1,52 @@
 package config
 
-import (
-	"os"
-	"path"
-	"strings"
+import "github.com/spf13/viper"
 
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
-
-	"gitlab.com/olaris/olaris-server/helpers"
-)
-
-var ConfigDir string
-
-func GetDefaultConfigDir() string {
-	defaultConfigDir := path.Join(helpers.GetHome(), ".config", "olaris")
-	if configDirEnv := os.Getenv("OLARIS_CONFIG_DIR"); configDirEnv != "" {
-		defaultConfigDir = configDirEnv
-	}
-
-	return defaultConfigDir
+// Config is the base struct populated from the configuration file on disk by
+// Viper.
+// NOTE: This is not actually used anywhere yet. We are currently pulling
+// directly from Viper when we need a setting.
+type Config struct {
+	Debug    Debug
+	Server   Server
+	Database Database
+	RClone   RClone
+	Metadata Metadata
 }
 
-func InitViper() {
-	viper.SetConfigName("olaris")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.SetEnvPrefix("olaris")
-	viper.AutomaticEnv()
+// Debug contains settings to enable additional debug information in various
+// places throughout the app.
+type Debug struct {
+	StreamingPages bool
+	TranscoderLog  bool
+}
 
-	viper.AddConfigPath(ConfigDir)
-	viper.Set("configdir", ConfigDir)
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// the user has no config file
-		} else {
-			logrus.WithError(err).WithField("configFile", viper.ConfigFileUsed()).Warnln("An error occurred while reading config file, contents are being ignored.")
-		}
-	}
+// Server contains settings that affect the built-in web server.
+type Server struct {
+	Port             int
+	Verbose          bool
+	DBLog            bool
+	SQLiteDir        string
+	CacheDir         string
+	DirectFileAccess bool
+}
 
-	config := &Config{}
-	if err := viper.Unmarshal(config); err != nil {
-		logrus.Debugf("error applying configuration: %s\n", err.Error())
-	}
+// Database contains settings that affect the database connection.
+type Database struct {
+	DBConn string
+}
+
+type RClone struct {
+	ConfigFile string
+}
+
+type Metadata struct {
+	ScanHidden bool
+}
+
+// FromViper creates a new Config from a Viper configuration.
+func FromViper() (*Config, error) {
+	var cfg Config
+	err := viper.Unmarshal(&cfg)
+	return &cfg, err
 }

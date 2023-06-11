@@ -1,7 +1,7 @@
 [server]
 #port = 8080
 #verbose = true
-#dblog = false
+#dbLog = false
 #directFileAccess = false
 
 [database]
@@ -12,7 +12,7 @@
 #transcoderLog = true
 
 [metadata]
-#scan_hidden = false
+#scanHidden = false
 
 [rclone]
 #configFile = "$HOME/.config/rclone/rclone.conf"

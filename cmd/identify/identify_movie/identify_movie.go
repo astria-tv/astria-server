@@ -7,29 +7,29 @@ import (
 	"github.com/goava/di"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/cmd/identify"
 	"gitlab.com/olaris/olaris-server/filesystem"
 	"gitlab.com/olaris/olaris-server/metadata/agents"
 	"gitlab.com/olaris/olaris-server/metadata/app"
 	"gitlab.com/olaris/olaris-server/metadata/db"
 	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
-type identifyMovieCommand cmd.Command
-
-func RegisterIdentifyMovieCommand(rootCommand identify.IdentifyCommand, identifyMovieCommand identifyMovieCommand) {
-	rootCommand.GetCobraCommand().AddCommand(identifyMovieCommand.GetCobraCommand())
-}
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewIdentifyMovieCommand, di.As(new(identifyMovieCommand))),
+		di.Provide(NewIdentifyMovieCommand, di.Tags{"type": "identify_movie"}),
 		di.Invoke(RegisterIdentifyMovieCommand),
 	)
 }
 
-func NewIdentifyMovieCommand() *cmd.CobraCommand {
+func RegisterIdentifyMovieCommand(deps struct {
+	di.Inject
+	IdentifyCommand      *cobra.Command `di:"type=identify"`
+	IdentifyMovieCommand *cobra.Command `di:"type=identify_movie"`
+}) {
+	deps.IdentifyCommand.AddCommand(deps.IdentifyMovieCommand)
+}
+
+func NewIdentifyMovieCommand() *cobra.Command {
 	var filePath string
 	var agent string
 	var id int
@@ -93,5 +93,5 @@ func NewIdentifyMovieCommand() *cmd.CobraCommand {
 	c.Flags().StringVar(&dbConn, "db-conn", "", "sets the database connection string")
 	c.Flags().BoolVar(&dbLog, "db-log", false, "sets whether the database should log queries")
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }

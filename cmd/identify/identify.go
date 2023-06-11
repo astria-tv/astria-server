@@ -4,25 +4,26 @@ import (
 	"github.com/goava/di"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-
-	"gitlab.com/olaris/olaris-server/cmd/root"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"gitlab.com/olaris/olaris-server/cmd/identify/identify_movie"
 )
 
-type IdentifyCommand cmd.Command
-
-func RegisterIdentifyCommand(rootCommand root.RootCommand, identifyCommand IdentifyCommand) {
-	rootCommand.GetCobraCommand().AddCommand(identifyCommand.GetCobraCommand())
-}
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewIdentifyCommand, di.As(new(IdentifyCommand))),
+		di.Provide(NewIdentifyCommand, di.Tags{"type": "identify"}),
 		di.Invoke(RegisterIdentifyCommand),
+		identify_movie.Options(),
 	)
 }
 
-func NewIdentifyCommand() *cmd.CobraCommand {
+func RegisterIdentifyCommand(deps struct {
+	di.Inject
+	RootCommand     *cobra.Command `di:"type=root"`
+	IdentifyCommand *cobra.Command `di:"type=identify"`
+}) {
+	deps.RootCommand.AddCommand(deps.IdentifyCommand)
+}
+
+func NewIdentifyCommand() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "identify",
 		Short: "Identify media files",
@@ -31,5 +32,5 @@ func NewIdentifyCommand() *cmd.CobraCommand {
 		},
 	}
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }

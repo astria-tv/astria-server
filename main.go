@@ -1,54 +1,63 @@
 package main
 
 import (
+	"github.com/spf13/cobra"
+	"gitlab.com/olaris/olaris-server/cmd"
+	"gitlab.com/olaris/olaris-server/helpers"
 	"os"
 
 	"github.com/goava/di"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
-
-	"gitlab.com/olaris/olaris-server/cmd"
-	"gitlab.com/olaris/olaris-server/cmd/root"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/pkg/config"
-	"gitlab.com/olaris/olaris-server/utils"
 )
 
-func main() {
-	config.RegisterFlags(registerGlobalFlags)
-	config.InitViper()
-
-	container, err := di.New(
-		cmd.New(),
-	)
-	if err != nil {
-		logrus.Fatal(err)
+// Workaround for setting a default command.
+// https://github.com/spf13/cobra/issues/823
+func resolveDefaultSubcommand(c *cobra.Command, defaultCommand string) {
+	if len(os.Args) < 2 {
+		os.Args = append(os.Args, defaultCommand)
+		return
 	}
 
-	var rootCommand root.RootCommand
-	utils.MustResolve(container, &rootCommand)
+	subcommand := os.Args[1]
 
-	err = rootCommand.GetCobraCommand().Execute()
+	exclusions := []string{
+		"--help",
+		"-h",
+		"help",
+		"completion",
+	}
+
+	if helpers.ElementExists(exclusions, subcommand) {
+		return
+	}
+
+	for _, v := range c.Commands() {
+		if v.Name() == subcommand {
+			return
+		}
+	}
+
+	os.Args = append([]string{os.Args[0], defaultCommand}, os.Args[1:]...)
+}
+
+func main() {
+	commandContainer, err := cmd.NewContainer()
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.WithError(err).Fatal("failed to create command container")
+	}
+
+	var rootCommand *cobra.Command
+	err = commandContainer.Resolve(&rootCommand, di.Tags{"type": "root"})
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to resolve root command")
+	}
+
+	resolveDefaultSubcommand(rootCommand, "serve")
+
+	err = rootCommand.Execute()
+	if err != nil {
+		logrus.WithError(err).Fatal("command execution failed")
 	}
 
 	os.Exit(0)
-}
-
-func registerGlobalFlags(fs *pflag.FlagSet) {
-	fs.Bool("allow_direct_file_access", false, "Whether accessing files directly by path (without a valid JWT) is allowed")
-	fs.Bool("enable_streaming_debug_pages", false, "Whether to enable debug pages in the streaming server")
-	fs.Bool("write_transcoder_log", true, "Whether to write transcoder output to logfile")
-
-	fs.StringVar(&config.ConfigDir, "config_dir", config.GetDefaultConfigDir(), "Default configuration directory for config files")
-	fs.String("rclone_config", helpers.GetDefaultRcloneConfigPath(), "Default rclone configuration file")
-	fs.String("cache_dir", helpers.GetDefaultCacheDir(), "Cache directory for transcoding an other temporarily files")
-
-	viper.BindPFlag("server.cacheDir", fs.Lookup("cache_dir"))
-	viper.BindPFlag("server.directFileAccess", fs.Lookup("allow_direct_file_access"))
-	viper.BindPFlag("debug.streamingPages", fs.Lookup("enable_streaming_debug_pages"))
-	viper.BindPFlag("debug.transcoderLog", fs.Lookup("write_transcoder_log"))
-	viper.BindPFlag("rclone.configFile", fs.Lookup("rclone_config"))
 }

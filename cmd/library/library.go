@@ -4,25 +4,26 @@ import (
 	"github.com/goava/di"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-
-	"gitlab.com/olaris/olaris-server/cmd/root"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"gitlab.com/olaris/olaris-server/cmd/library/library_create"
 )
 
-type LibraryCommand cmd.Command
-
-func RegisterLibraryCommand(rootCommand root.RootCommand, libraryCommand LibraryCommand) {
-	rootCommand.GetCobraCommand().AddCommand(libraryCommand.GetCobraCommand())
-}
-
-func New() di.Option {
+func Options() di.Option {
 	return di.Options(
-		di.Provide(NewLibraryCommand, di.As(new(LibraryCommand))),
+		di.Provide(NewLibraryCommand, di.Tags{"type": "library"}),
 		di.Invoke(RegisterLibraryCommand),
+		library_create.Options(),
 	)
 }
 
-func NewLibraryCommand() *cmd.CobraCommand {
+func RegisterLibraryCommand(deps struct {
+	di.Inject
+	RootCommand    *cobra.Command `di:"type=root"`
+	LibraryCommand *cobra.Command `di:"type=library"`
+}) {
+	deps.RootCommand.AddCommand(deps.LibraryCommand)
+}
+
+func NewLibraryCommand() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "library",
 		Short: "Manage libraries",
@@ -31,5 +32,5 @@ func NewLibraryCommand() *cmd.CobraCommand {
 		},
 	}
 
-	return &cmd.CobraCommand{Command: c}
+	return c
 }
