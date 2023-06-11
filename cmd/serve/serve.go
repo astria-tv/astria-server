@@ -55,8 +55,6 @@ func NewServeCommand(deps struct {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			_ = viper.BindPFlag("server.port", cmd.Flags().Lookup("port"))
 			_ = viper.BindPFlag("server.dbLog", cmd.Flags().Lookup("db-log"))
-			_ = viper.BindPFlag("server.zeroconf.enabled", cmd.Flags().Lookup("zeroconf-enabled"))
-			_ = viper.BindPFlag("server.zeroconf.domain", cmd.Flags().Lookup("zeroconf-domain"))
 			_ = registerMetadataViper(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

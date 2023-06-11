@@ -38,8 +38,8 @@ func NewRootCommand() *cobra.Command {
 
 	c.PersistentFlags().Bool("allow-direct-file-access", false, "Whether accessing files directly by path (without a valid JWT) is allowed")
 	c.PersistentFlags().Bool("enable-streaming-debug-pages", false, "Whether to enable debug pages in the streaming server")
-	c.PersistentFlags().Bool("write-transcoder-log", true, "Whether to write transcoder output to logfile")
-	c.PersistentFlags().BoolP("verbose", "v", true, "verbose logging")
+	c.PersistentFlags().Bool("write-transcoder-log", false, "Whether to write transcoder output to logfile")
+	c.PersistentFlags().BoolP("verbose", "v", false, "verbose logging")
 	c.PersistentFlags().String("config-dir", config.GetDefaultConfigDir(), "Default configuration directory for config files")
 	c.PersistentFlags().String("rclone-config", helpers.GetDefaultRcloneConfigPath(), "Default rclone configuration file")
 	c.PersistentFlags().String("cache-dir", helpers.GetDefaultCacheDir(), "Cache directory for transcoding an other temporarily files")

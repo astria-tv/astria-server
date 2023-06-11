@@ -41,6 +41,7 @@ func resolveDefaultSubcommand(c *cobra.Command, defaultCommand string) {
 }
 
 func main() {
+
 	commandContainer, err := cmd.NewContainer()
 	if err != nil {
 		logrus.WithError(err).Fatal("failed to create command container")
