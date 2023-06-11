@@ -13,7 +13,6 @@ import (
 	"github.com/goava/di"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/grandcat/zeroconf"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -129,17 +128,6 @@ func NewServeCommand(deps struct {
 			// tool doesn't properly send SIGTERM.
 			ffmpeg.CleanTranscodingCache()
 			port := viper.GetInt("server.port")
-
-			if viper.GetBool("server.zeroconf.enabled") {
-				domain := viper.GetString("server.zeroconf.domain")
-				zeroconfService, err := zeroconf.Register("olaris", "_http._tcp", domain, port, []string{"txtv=0", "lo=1", "la=2"}, nil)
-				if err != nil {
-					log.WithError(err).Warn("zeroconf setup failed")
-				} else {
-					log.Info("zeroconf successfully enabled")
-				}
-				defer zeroconfService.Shutdown()
-			}
 
 			appRoute := rrr.PathPrefix("/app").
 				Handler(http.StripPrefix("/olaris/app", react.GetHandler())).

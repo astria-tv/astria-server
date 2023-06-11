@@ -1,4 +1,4 @@
-![Astria server header](assets/logo/Color%20logo%20with%20background.png)
+![Astria server header](assets/logo/logo-sbs-bg.svg)
 
 ## `This is all pre-release code, continue at your own peril.`
 
