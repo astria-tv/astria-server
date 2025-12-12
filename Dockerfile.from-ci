@@ -1,4 +1,4 @@
-FROM olaristv/olaris-server:latest as base
+FROM olaristv/olaris-server:latest AS base
 
 ADD docker/download-olaris-from-ci.sh /opt/olaris/download-olaris-from-ci.sh
 

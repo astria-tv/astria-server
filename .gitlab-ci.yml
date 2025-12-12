@@ -1,4 +1,4 @@
-image: debian:stretch
+image: debian:trixie
 
 variables:
   REPO_NAME: gitlab.com/olaris/olaris-server
@@ -6,7 +6,7 @@ variables:
 before_script:
   - apt-get update
   - apt-get install -y curl g++ gcc git libc6-dev make zip unzip
-  - curl -sL https://golang.org/dl/go1.18.linux-amd64.tar.gz | tar -C /usr/local -xz
+  - curl -sL https://golang.org/dl/go1.25.5.linux-amd64.tar.gz | tar -C /usr/local -xz
   - export PATH=$PATH:/usr/local/go/bin
   - make ready-ci
 
@@ -58,7 +58,7 @@ dist-linux-arm64:
 
 docker:
     image:
-      name: docker:stable
+      name: docker:cli
     services:
       - name: docker:dind
         alias: dockerdaemon

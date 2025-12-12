@@ -1,8 +1,8 @@
-FROM debian:bullseye as build
+FROM debian:trixie AS build
 
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends ca-certificates curl g++ gcc git libc6-dev make unzip && \
-    curl -sL https://golang.org/dl/go1.18.linux-amd64.tar.gz | tar -C /usr/local -xz
+    curl -sL https://golang.org/dl/go1.25.5.linux-amd64.tar.gz | tar -C /usr/local -xz
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 
@@ -11,7 +11,7 @@ WORKDIR /go/src/gitlab.com/olaris/olaris-server
 
 RUN make download-olaris-react generate build-local
 
-FROM debian:bullseye AS release
+FROM debian:trixie AS release
 
 # Install sudo because entrypoint.sh uses it
 RUN apt-get -y update && \

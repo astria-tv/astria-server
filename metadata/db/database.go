@@ -90,7 +90,7 @@ func NewDb(options DatabaseOptions) *gorm.DB {
 			}
 			log.Println("using postgres database driver")
 		default:
-			log.Errorf(fmt.Sprintf("unknown database engine: %s", engine))
+			log.Errorf("unknown database engine: %s", engine)
 			os.Exit(1)
 		}
 	} else {
