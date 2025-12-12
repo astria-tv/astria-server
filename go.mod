@@ -1,6 +1,6 @@
 module gitlab.com/olaris/olaris-server
 
-go 1.18
+go 1.24.0
 
 replace github.com/jlaffaye/ftp => github.com/rclone/ftp v1.0.0-210902f
 
@@ -16,7 +16,7 @@ require (
 	github.com/graph-gophers/graphql-go v1.3.0
 	github.com/graph-gophers/graphql-transport-ws v0.0.1
 	github.com/jinzhu/gorm v1.9.16
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.4.1
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.1
 	github.com/pkg/errors v0.9.1
 	github.com/rclone/rclone v1.57.0
 	github.com/rs/cors v1.8.2
@@ -29,7 +29,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/sys v0.0.0-20211210111614-af8b64212486
+	gitlab.com/olaris/olaris-rename v0.0.0-20220629071935-c44ace6d9152
+	golang.org/x/sys v0.38.0
 	gopkg.in/gormigrate.v1 v1.6.0
 )
 
@@ -127,22 +128,20 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/yunify/qingstor-sdk-go/v3 v3.2.0 // indirect
 	github.com/zeebo/errs v1.2.2 // indirect
-	gitlab.com/olaris/olaris-rename v0.0.0-20220629071935-c44ace6d9152 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.0 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/mod v0.5.0 // indirect
-	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
+	golang.org/x/crypto v0.44.0 // indirect
+	golang.org/x/mod v0.30.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/term v0.37.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
-	golang.org/x/tools v0.1.5 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/api v0.63.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
@@ -156,3 +155,5 @@ require (
 	storj.io/drpc v0.0.24 // indirect
 	storj.io/uplink v1.4.6 // indirect
 )
+
+tool github.com/maxbrunsfeld/counterfeiter/v6
