@@ -37,10 +37,8 @@ func UpNextMovies(userID uint) (movies []*Movie) {
 		Joins("JOIN play_states ON play_states.media_uuid = movies.uuid").
 		Where("play_states.finished = false").
 		Where("play_states.user_id = ?", userID).
+		Preload("MovieFiles.Streams").
 		Find(&movies)
-	for i := range movies {
-		db.Model(movies[i]).Preload("Streams").Association("MovieFiles").Find(&movies[i].MovieFiles)
-	}
 	return movies
 }
 
@@ -97,8 +95,22 @@ func UpNextEpisodes(userID uint) []*Episode {
 			}
 		}
 	}
-	for i := range eps {
-		db.Model(eps[i]).Preload("Streams").Association("EpisodeFiles").Find(&eps[i].EpisodeFiles)
+
+	// Batch preload EpisodeFiles and Streams for all found episodes
+	if len(eps) > 0 {
+		epIDs := make([]uint, len(eps))
+		for i := range eps {
+			epIDs[i] = eps[i].ID
+		}
+		var files []EpisodeFile
+		db.Preload("Streams").Where("episode_id IN (?)", epIDs).Find(&files)
+		filesByEpID := make(map[uint][]EpisodeFile)
+		for _, f := range files {
+			filesByEpID[f.EpisodeID] = append(filesByEpID[f.EpisodeID], f)
+		}
+		for i := range eps {
+			eps[i].EpisodeFiles = filesByEpID[eps[i].ID]
+		}
 	}
 	return eps
 }
@@ -123,6 +135,20 @@ func SavePlayState(playState *PlayState) error {
 
 func DeletePlayState(mediaUUID string, userID uint) error {
 	return db.Unscoped().Delete(PlayState{}, "media_uuid = ? AND user_id = ?", mediaUUID, userID).Error
+}
+
+// FindPlayStatesByUUIDs batch-loads play states for the given media UUIDs and user.
+func FindPlayStatesByUUIDs(mediaUUIDs []string, userID uint) map[string]*PlayState {
+	result := make(map[string]*PlayState)
+	if len(mediaUUIDs) == 0 || userID == 0 {
+		return result
+	}
+	var playStates []PlayState
+	db.Where("media_uuid IN (?) AND user_id = ?", mediaUUIDs, userID).Find(&playStates)
+	for i := range playStates {
+		result[playStates[i].MediaUUID] = &playStates[i]
+	}
+	return result
 }
 
 // FindPlayState finds a playstate

@@ -145,6 +145,31 @@ func UnwatchedEpisodesInSeriesCount(seriesID uint, userID uint) uint {
 	return res.Count
 }
 
+type seriesCountResult struct {
+	SeriesID uint
+	Count    uint
+}
+
+// BatchUnwatchedEpisodesInSeriesCounts retrieves the unwatched episode counts for multiple series in a single query.
+func BatchUnwatchedEpisodesInSeriesCounts(seriesIDs []uint, userID uint) map[uint]uint {
+	result := make(map[uint]uint)
+	if len(seriesIDs) == 0 {
+		return result
+	}
+	var res []seriesCountResult
+	db.Raw("SELECT seasons.series_id, COUNT(*) as count FROM episodes "+
+		"INNER JOIN seasons ON seasons.id = episodes.season_id "+
+		"WHERE seasons.series_id IN (?) "+
+		"AND episodes.uuid NOT IN("+
+		"SELECT media_uuid FROM play_states WHERE finished = true AND user_id = ? "+
+		"AND media_uuid IN(SELECT uuid FROM episodes INNER JOIN seasons s2 ON s2.id = episodes.season_id WHERE s2.series_id IN (?))"+
+		") GROUP BY seasons.series_id", seriesIDs, userID, seriesIDs).Scan(&res)
+	for _, r := range res {
+		result[r.SeriesID] = r.Count
+	}
+	return result
+}
+
 // UnwatchedEpisodesInSeasonCount retrieves the amount of unwatched episodes in a given season.
 func UnwatchedEpisodesInSeasonCount(seasonID uint, userID uint) uint {
 	var res countResult

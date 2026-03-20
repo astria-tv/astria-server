@@ -31,6 +31,7 @@ type posterURLArgs struct {
 
 // Movies returns all movies.
 func (r *Resolver) Movies(ctx context.Context, args *movieQueryArgs) []*MovieResolver {
+	userID, _ := auth.UserID(ctx)
 	var l []*MovieResolver
 	var movies []db.Movie
 	qd := args.asQueryDetails()
@@ -40,8 +41,16 @@ func (r *Resolver) Movies(ctx context.Context, args *movieQueryArgs) []*MovieRes
 	} else {
 		movies = db.FindAllMovies(qd)
 	}
+
+	// Batch-load play states for all movies
+	uuids := make([]string, len(movies))
+	for i := range movies {
+		uuids[i] = movies[i].UUID
+	}
+	playStates := db.FindPlayStatesByUUIDs(uuids, userID)
+
 	for _, movie := range movies {
-		mov := MovieResolver{r: movie}
+		mov := MovieResolver{r: movie, playState: playStates[movie.UUID]}
 		l = append(l, &mov)
 	}
 	return l
@@ -49,16 +58,22 @@ func (r *Resolver) Movies(ctx context.Context, args *movieQueryArgs) []*MovieRes
 
 // MovieResolver is a resolver for movies.
 type MovieResolver struct {
-	r db.Movie
+	r         db.Movie
+	playState *db.PlayState
 }
 
 // Files return files for movie.
 func (r *MovieResolver) Files() (res []*MovieFileResolver) {
-	for _, file := range db.FindFilesForMovieUUID(r.r.UUID) {
-		resolver := MovieFileResolver{r: *file}
+	if len(r.r.MovieFiles) == 0 {
+		for _, file := range db.FindFilesForMovieUUID(r.r.UUID) {
+			res = append(res, &MovieFileResolver{r: *file})
+		}
+		return res
+	}
+	for _, file := range r.r.MovieFiles {
+		resolver := MovieFileResolver{r: file}
 		res = append(res, &resolver)
 	}
-
 	return res
 }
 
@@ -131,6 +146,9 @@ func (r *MovieResolver) TmdbID() int32 {
 
 // PlayState returns playstate for given user.
 func (r *MovieResolver) PlayState(ctx context.Context) *PlayStateResolver {
+	if r.playState != nil {
+		return &PlayStateResolver{r: *r.playState}
+	}
 	userID, _ := auth.UserID(ctx)
 	playState, _ := db.FindPlayState(r.r.UUID, userID)
 	if playState == nil {
@@ -191,7 +209,14 @@ func (r *MovieFileResolver) UUID() string {
 
 // TotalDuration returns the total duration in seconds based on the first encountered videostream.
 func (r *MovieFileResolver) TotalDuration() *float64 {
-	for _, stream := range db.FindStreamsForMovieFileUUID(r.r.UUID) {
+	streams := r.r.Streams
+	if len(streams) == 0 {
+		for _, s := range db.FindStreamsForMovieFileUUID(r.r.UUID) {
+			streams = append(streams, *s)
+		}
+		r.r.Streams = streams
+	}
+	for _, stream := range streams {
 		if stream.StreamType == "video" {
 			seconds := stream.TotalDuration.Seconds()
 			return &seconds
@@ -201,9 +226,16 @@ func (r *MovieFileResolver) TotalDuration() *float64 {
 }
 
 // Streams return all streams
-func (r *MovieFileResolver) Streams() (streams []*StreamResolver) {
-	for _, stream := range db.FindStreamsForMovieFileUUID(r.r.UUID) {
-		streams = append(streams, &StreamResolver{r: *stream})
+func (r *MovieFileResolver) Streams() (res []*StreamResolver) {
+	streams := r.r.Streams
+	if len(streams) == 0 {
+		for _, s := range db.FindStreamsForMovieFileUUID(r.r.UUID) {
+			streams = append(streams, *s)
+		}
+		r.r.Streams = streams
 	}
-	return streams
+	for _, stream := range streams {
+		res = append(res, &StreamResolver{r: stream})
+	}
+	return res
 }

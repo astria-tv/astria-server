@@ -2,11 +2,12 @@ package resolvers
 
 import (
 	"context"
+	"time"
+
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-server/metadata/db"
 	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
-	"time"
 )
 
 type eventFilterFn = func(e *metadata.MetadataEvent) bool
@@ -205,7 +206,7 @@ type MovieAddedEventResolver struct {
 }
 
 func (r *MovieAddedEventResolver) Movie() *MovieResolver {
-	return &MovieResolver{r.r}
+	return &MovieResolver{r: r.r}
 }
 
 type MovieUpdatedEventResolver struct {
@@ -213,7 +214,7 @@ type MovieUpdatedEventResolver struct {
 }
 
 func (r *MovieUpdatedEventResolver) Movie() *MovieResolver {
-	return &MovieResolver{r.r}
+	return &MovieResolver{r: r.r}
 }
 
 type MovieDeletedEventResolver struct {
@@ -229,7 +230,7 @@ type SeriesAddedEventResolver struct {
 }
 
 func (r *SeriesAddedEventResolver) Series() *SeriesResolver {
-	return &SeriesResolver{r.r}
+	return &SeriesResolver{r: r.r}
 }
 
 type SeriesDeletedEventResolver struct {
@@ -245,7 +246,7 @@ type SeasonAddedEventResolver struct {
 }
 
 func (r *SeasonAddedEventResolver) Season() *SeasonResolver {
-	return &SeasonResolver{r.r}
+	return &SeasonResolver{r: r.r}
 }
 
 type SeasonDeletedEventResolver struct {
@@ -261,7 +262,7 @@ type EpisodeAddedEventResolver struct {
 }
 
 func (r *EpisodeAddedEventResolver) Episode() *EpisodeResolver {
-	return &EpisodeResolver{r.r}
+	return &EpisodeResolver{r: r.r}
 }
 
 type EpisodeDeletedEventResolver struct {

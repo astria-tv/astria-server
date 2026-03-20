@@ -180,10 +180,7 @@ func FindAllMovies(qd *QueryDetails) (movies []Movie) {
 		q = q.Limit(qd.Limit).Offset(qd.Offset)
 	}
 
-	q = q.Find(&movies)
-	for _, movie := range movies {
-		CollectMovieInfo(&movie)
-	}
+	q.Preload("MovieFiles.Streams").Find(&movies)
 
 	return movies
 }
