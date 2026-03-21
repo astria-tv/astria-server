@@ -1,0 +1,3 @@
+[submodule "react/astria-web"]
+	path = react/astria-web
+	url = https://github.com/astria-tv/astria-web.git

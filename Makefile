@@ -13,7 +13,6 @@ BIN_LOC=build
 DIST_DIR=dist
 BINARY_NAME=olaris
 CMD_SERVER_PATH=main.go
-REACT_REPO=https://gitlab.com/olaris/olaris-react.git
 SRC_PATH=gitlab.com/olaris/olaris-server
 REACT_BUILD_DIR=./app/build
 IDENTIFIER=$(BINARY_NAME)-$(GOOS)-$(GOARCH)
@@ -23,19 +22,14 @@ LDFLAGS=-ldflags "-X $(SRC_PATH)/helpers.Version=$(RELEASE_IDENTIFIER)"
 all: generate
 
 .PHONY: ready-ci
-ready-ci: download-olaris-react generate
+ready-ci: build-web generate
 
-.PHONY: download-olaris-react
-download-olaris-react:
-	curl -L 'https://gitlab.com/api/v4/projects/olaris%2Folaris-react/jobs/artifacts/develop/download?job=build' > react/static.zip
-	unzip -o react/static.zip -d react/
-	rm react/static.zip
-
-.PHONY: build-olaris-react
-build-olaris-react:
-	if [ ! -d "./builds/olaris-react" ]; then mkdir -p builds && cd builds && git clone $(REACT_REPO) olaris-react; fi
-	cd builds/olaris-react && git fetch --all && git reset --hard origin/develop && yarn install && yarn build
-	cp -r builds/olaris-react/build ./react/
+.PHONY: build-web
+build-web:
+	git submodule update --init --recursive
+	cd react/astria-web && npm install && npm run build
+	rm -rf react/build
+	cp -r react/astria-web/dist react/build
 
 .PHONY: build
 build: generate

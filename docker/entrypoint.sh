@@ -1,20 +1,20 @@
 #!/bin/bash
 set -e
 
-if [ ! -z "${OLARIS_UID}" ]; then
-  if [ ! "$(id -u olaris)" -eq "${OLARIS_UID}" ]; then
+if [ ! -z "${ASTRIA_UID}" ]; then
+  if [ ! "$(id -u astria)" -eq "${ASTRIA_UID}" ]; then
     # Change the UID
-    usermod -o -u "${OLARIS_UID}" olaris
+    usermod -o -u "${ASTRIA_UID}" astria
   fi
 fi
 
-if [ ! -z "${OLARIS_GID}" ]; then
-  if [ ! "$(id -g olaris)" -eq "${OLARIS_GID}" ]; then
-    groupmod -o -g "${OLARIS_GID}" olaris
+if [ ! -z "${ASTRIA_GID}" ]; then
+  if [ ! "$(id -g astria)" -eq "${ASTRIA_GID}" ]; then
+    groupmod -o -g "${ASTRIA_GID}" astria
   fi
 fi
 
 args=( "$@" )
 # Login shell to properly set env vars
-exec sudo -E -H -u olaris "$@"
+exec sudo -E -H -u astria "$@"
 
