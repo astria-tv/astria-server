@@ -14,8 +14,8 @@ import (
 var ConfigDir string
 
 func GetDefaultConfigDir() string {
-	defaultConfigDir := path.Join(helpers.GetHome(), ".config", "olaris")
-	if configDirEnv := os.Getenv("OLARIS_CONFIG_DIR"); configDirEnv != "" {
+	defaultConfigDir := path.Join(helpers.GetHome(), ".config", "astria")
+	if configDirEnv := os.Getenv("ASTRIA_CONFIG_DIR"); configDirEnv != "" {
 		defaultConfigDir = configDirEnv
 	}
 
@@ -23,9 +23,9 @@ func GetDefaultConfigDir() string {
 }
 
 func InitViper() {
-	viper.SetConfigName("olaris")
+	viper.SetConfigName("astria")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.SetEnvPrefix("olaris")
+	viper.SetEnvPrefix("astria")
 	viper.AutomaticEnv()
 
 	viper.AddConfigPath(ConfigDir)

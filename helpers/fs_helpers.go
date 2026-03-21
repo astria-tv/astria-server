@@ -70,7 +70,7 @@ func GetDefaultCacheDir() string {
 	if err != nil {
 		panic(fmt.Sprintf("Error getting user cache dir: %s", err.Error()))
 	}
-	return path.Join(cacheDir, "olaris")
+	return path.Join(cacheDir, "astria")
 }
 
 // LogDir returns the path to our logfolder.
