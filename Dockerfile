@@ -32,7 +32,7 @@ RUN make generate build-local
 FROM debian:trixie AS release
 
 RUN apt-get -y update && \
-    apt-get install -y --no-install-recommends ca-certificates ffmpeg && \
+    apt-get install -y --no-install-recommends ca-certificates ffmpeg sudo && \
     apt-get autoremove && apt-get clean
 
 COPY --from=build /go/src/gitlab.com/olaris/olaris-server/build/olaris /opt/olaris/olaris
@@ -44,9 +44,7 @@ RUN groupadd --gid 1000 astria \
 
 RUN mkdir -p /home/astria/.config/astria && chown astria:astria /home/astria/.config/astria
 
-USER astria
 WORKDIR /home/astria
-
 VOLUME /home/astria/.config/astria
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh", "/opt/olaris/olaris"]
