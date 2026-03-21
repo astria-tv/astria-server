@@ -46,7 +46,7 @@ func NewTransmuxingSession(
 	}...)
 
 	// Set the HLS output format options
-	args = setHlsTsOptions(args, segmentStartIndex)
+	args = setHlsSegmentOptions(args, segmentStartIndex)
 
 	args = append(args, []string{
 		// We serve our own manifest, so we don't really care about this.

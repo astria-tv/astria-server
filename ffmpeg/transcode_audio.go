@@ -2,13 +2,14 @@ package ffmpeg
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 var AudioEncoderPresets = map[string]EncoderParams{
@@ -51,7 +52,7 @@ func NewAudioTranscodingSession(
 	}...)
 
 	// Set the HLS output format options
-	args = setHlsTsOptions(args, segmentStartIndex)
+	args = setHlsSegmentOptions(args, segmentStartIndex)
 
 	// We serve our own manifest, so we don't really care about this.
 	args = append(args, path.Join(outputDir, "generated_by_ffmpeg.m3u"))

@@ -72,18 +72,18 @@ type avc1Level struct {
 	MaxBitrate   int64
 }
 
-// setHlsTsOptions adds the hls_ts_options parameter to the end of the argument
+// setHlsSegmentOptions adds the hls_segment_options parameter to the end of the argument
 // list.
-func setHlsTsOptions(args []string, segmentStartIndex int) []string {
+func setHlsSegmentOptions(args []string, segmentStartIndex int) []string {
 	if segmentStartIndex != 0 {
 		args = append(args, []string{
 			// If we are not starting with the first segment, indicate that the
 			// fragment is discontinuous
-			"-hls_ts_options", "movflags=dash+frag_discont",
+			"-hls_segment_options", "movflags=dash+frag_discont",
 		}...)
 	} else {
 		args = append(args, []string{
-			"-hls_ts_options", "movflags=dash",
+			"-hls_segment_options", "movflags=dash",
 		}...)
 	}
 

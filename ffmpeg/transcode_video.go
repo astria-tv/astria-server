@@ -96,7 +96,7 @@ func NewVideoTranscodingSession(
 	}...)
 
 	// Set the HLS output format options
-	args = setHlsTsOptions(args, segmentStartIndex)
+	args = setHlsSegmentOptions(args, segmentStartIndex)
 
 	if encoderParams.width != 0 || encoderParams.height != 0 {
 		args = append(args, []string{
