@@ -32,7 +32,7 @@ const transcodingMasterPlaylistTemplate = `#EXTM3U
 {{ end }}
 
 {{ range $i, $s := .subtitlePlaylistItems -}}
-#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="webvtt",NAME="{{$s.Stream.Title}}",LANGUAGE="{{$s.Stream.Language}}",AUTOSELECT=YES,URI="{{$s.URI}}"{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
+#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="webvtt",NAME="{{$s.Stream.Title}}",LANGUAGE="{{$s.Stream.Language}}",AUTOSELECT={{ if $s.Stream.EnabledByDefault }}YES{{ else }}NO{{ end }},URI="{{$s.URI}}"{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end }}
 
 {{ range $ci, $c := .representationCombinations -}}

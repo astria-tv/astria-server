@@ -148,6 +148,13 @@ func (s *TranscodingSession) FindSegmentByIndex(index int) (string, error) {
 		return segmentPath, nil
 	}
 
+	// For subtitles, we only maintain one single "segment" (file) which is
+	// written by a single pass of ffmpeg. We don't have a next segment to check.
+	// We rely on the process state check above to determine if it is ready.
+	if s.Stream.Stream.StreamType == "subtitle" {
+		return segmentPath, os.ErrNotExist
+	}
+
 	// Look for the next segment to make sure the current one is finished
 	nextSegmentPath := s.segmentPathForIndex(index + 1)
 	_, err = os.Stat(nextSegmentPath)
