@@ -18,12 +18,12 @@ func GetVideoEncoderPreset(stream Stream, name string) (EncoderParams, error) {
 		"480-1000k-video": {
 			height: 480, width: -2,
 			videoBitrate: 1000000},
-		"720-5000k-video": {
+		"720-3000k-video": {
 			height: 720, width: -2,
-			videoBitrate: 5000000},
-		"1080-10000k-video": {
+			videoBitrate: 3000000},
+		"1080-6000k-video": {
 			height: 1080, width: -2,
-			videoBitrate: 10000000},
+			videoBitrate: 6000000},
 	}[name]
 
 	if !exists {
@@ -47,8 +47,8 @@ func GetVideoEncoderPreset(stream Stream, name string) (EncoderParams, error) {
 // List of standard presets that are offered by default
 var standardPresets = []string{
 	"preset:480-1000k-video",
-	"preset:720-5000k-video",
-	"preset:1080-10000k-video"}
+	"preset:720-3000k-video",
+	"preset:1080-6000k-video"}
 
 func GetStandardPresetVideoRepresentations(stream Stream) []StreamRepresentation {
 	representations := []StreamRepresentation{}
@@ -85,7 +85,7 @@ func NewVideoTranscodingSession(
 		"-copyts",
 		"-start_at_zero",
 		"-map", fmt.Sprintf("0:%d", stream.Stream.StreamId),
-		"-c:0", "libx264", "-b:v", strconv.Itoa(encoderParams.videoBitrate),
+		"-c:0", "libx264", "-crf", "23", "-maxrate", strconv.Itoa(encoderParams.videoBitrate), "-bufsize", strconv.Itoa(encoderParams.videoBitrate * 2),
 		"-preset:0", "veryfast",
 		"-force_key_frames", fmt.Sprintf("expr:gte(t,n_forced*%.3f)", SegmentDuration.Seconds()),
 		"-f", "hls",
@@ -98,7 +98,8 @@ func NewVideoTranscodingSession(
 	// Set the HLS output format options
 	args = setHlsSegmentOptions(args, segmentStartIndex)
 
-	if encoderParams.width != 0 || encoderParams.height != 0 {
+	if (encoderParams.width != 0 || encoderParams.height != 0) &&
+		(encoderParams.width != stream.Stream.Width || encoderParams.height != stream.Stream.Height) {
 		args = append(args, []string{
 			"-filter:0", fmt.Sprintf("scale=%d:%d", encoderParams.width, encoderParams.height),
 		}...)

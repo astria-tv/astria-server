@@ -21,13 +21,18 @@ type SubtitlePlaylistItem struct {
 	URI string
 }
 
+type AudioGroup struct {
+	Name    string
+	Streams []ffmpeg.StreamRepresentation
+}
+
 const transcodingMasterPlaylistTemplate = `#EXTM3U
 #EXT-X-VERSION:7
 #EXT-X-INDEPENDENT-SEGMENTS
 
-{{ range $ci, $c := .representationCombinations -}}
-{{ range $si, $s := $c.AudioStreams -}}
-#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$c.AudioGroupName}}",NAME="{{$s.Stream.Title}}",CHANNELS="2",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
+{{ range $agi, $ag := .audioGroups -}}
+{{ range $si, $s := $ag.Streams -}}
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$ag.Name}}",NAME="{{$s.Stream.Title}}",CHANNELS="2",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end -}}
 {{ end }}
 
@@ -73,10 +78,23 @@ func BuildMasterPlaylistFromFile(
 	representationCombinations []RepresentationCombination,
 	subtitlePlaylistItems []SubtitlePlaylistItem) string {
 
+	audioGroups := []AudioGroup{}
+	seenGroups := make(map[string]bool)
+	for _, c := range representationCombinations {
+		if !seenGroups[c.AudioGroupName] {
+			seenGroups[c.AudioGroupName] = true
+			audioGroups = append(audioGroups, AudioGroup{
+				Name:    c.AudioGroupName,
+				Streams: c.AudioStreams,
+			})
+		}
+	}
+
 	buf := bytes.Buffer{}
 	t := template.Must(template.New("manifest").Parse(transcodingMasterPlaylistTemplate))
 
 	t.Execute(&buf, map[string]interface{}{
+		"audioGroups":                audioGroups,
 		"subtitlePlaylistItems":      subtitlePlaylistItems,
 		"representationCombinations": representationCombinations,
 	})

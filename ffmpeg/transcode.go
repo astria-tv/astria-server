@@ -11,9 +11,8 @@ func GetSimilarEncoderParams(stream Stream) (EncoderParams, error) {
 		return EncoderParams{
 			videoBitrate: int(stream.BitRate),
 			Codecs:       GetAVC1Tag(stream.Width, stream.Height, stream.BitRate, stream.FrameRate),
-			// TODO(Leon Handreke): Don't even invoke the scale filter in this case.
-			width:  -2,
-			height: stream.Height,
+			width:        stream.Width,
+			height:       stream.Height,
 		}, nil
 	} else if stream.StreamType == "audio" {
 		return EncoderParams{

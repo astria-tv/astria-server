@@ -2,12 +2,14 @@ package streaming
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"gitlab.com/olaris/olaris-server/hls"
 	"gitlab.com/olaris/olaris-server/metadata/auth"
-	"net/http"
-	"strconv"
 )
 
 func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +39,7 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 	// https://gitlab.com/olaris/olaris-server/issues/48
 	if fullQualityRepresentation.Representation.Transcoded {
 		// Build lower-quality transcoded versions
-		for _, preset := range []string{"preset:480-1000k-video", "preset:720-5000k-video", "preset:1080-10000k-video"} {
+		for _, preset := range []string{"preset:480-1000k-video", "preset:720-3000k-video", "preset:1080-6000k-video"} {
 			r, _ := ffmpeg.StreamRepresentationFromRepresentationId(
 				streams.GetVideoStream(), preset)
 			if r.Representation.BitRate < fullQualityRepresentation.Representation.BitRate {
@@ -45,6 +47,10 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+
+	sort.Slice(videoRepresentations, func(i, j int) bool {
+		return videoRepresentations[i].Representation.BitRate < videoRepresentations[j].Representation.BitRate
+	})
 
 	audioStreamRepresentations := []ffmpeg.StreamRepresentation{}
 	for _, s := range streams.AudioStreams {
@@ -126,7 +132,7 @@ func serveHlsTranscodingMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 	videoRepresentation1, _ := ffmpeg.StreamRepresentationFromRepresentationId(
 		streams.GetVideoStream(), "preset:480-1000k-video")
 	videoRepresentation2, _ := ffmpeg.StreamRepresentationFromRepresentationId(
-		streams.GetVideoStream(), "preset:720-5000k-video")
+		streams.GetVideoStream(), "preset:720-3000k-video")
 	videoRepresentations := []ffmpeg.StreamRepresentation{
 		videoRepresentation1, videoRepresentation2}
 
