@@ -2,10 +2,11 @@ package ffmpeg
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"os/exec"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func NewSubtitleSession(
@@ -18,9 +19,10 @@ func NewSubtitleSession(
 	}
 
 	cmd := exec.Command("ffmpeg",
+		"-probesize", "25M", // Especially since we want to not read too much data for remote locations such as Rclone mounts we want to prevent reading too many bytes. Might need adjusting if it misses a bunch of subtitles.
+		"-analyzeduration", "200M",
 		"-i", buildFfmpegUrlFromFileLocator(stream.Stream.FileLocator),
 		"-map", fmt.Sprintf("0:%d", stream.Stream.StreamId),
-		"-probesize", "25M", // Especially since we want to not read too much data for remote locations such as Rclone mounts we want to prevent reading too many bytes. Might need adjusting if it misses a bunch of subtitles.
 		"-f", "webvtt",
 		"stream0_0.m4s")
 	cmd.Stderr, _ = os.Open(os.DevNull)
