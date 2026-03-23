@@ -89,19 +89,30 @@ func BuildTranscodingMediaPlaylistFromFile(sr ffmpeg.StreamRepresentation) strin
 		StartTimestamp: 0,
 		EndTimestamp:   sr.Stream.TotalDurationDts,
 	}
-	segmentDurations := ffmpeg.ComputeSegmentDurations(
-		[][]ffmpeg.Segment{
-			ffmpeg.BuildConstantSegmentDurations(totalInterval, ffmpeg.SegmentDuration, 0),
-		})
+
 	segmentDurationsSeconds := []float64{}
 	maxSegmentDuration := 0.0
-	for _, d := range segmentDurations {
-		ds := d.Seconds()
+
+	if sr.Stream.StreamType == "subtitle" {
+		// Subtitles are served as a single file, so we have one segment with the total duration.
+		ds := sr.Stream.TotalDuration.Seconds()
 		segmentDurationsSeconds = append(segmentDurationsSeconds, ds)
-		if ds > maxSegmentDuration {
-			maxSegmentDuration = ds
+		maxSegmentDuration = ds
+	} else {
+		segmentDurations := ffmpeg.ComputeSegmentDurations(
+			[][]ffmpeg.Segment{
+				ffmpeg.BuildConstantSegmentDurations(totalInterval, ffmpeg.SegmentDuration, 0),
+			})
+
+		for _, d := range segmentDurations {
+			ds := d.Seconds()
+			segmentDurationsSeconds = append(segmentDurationsSeconds, ds)
+			if ds > maxSegmentDuration {
+				maxSegmentDuration = ds
+			}
 		}
 	}
+
 	targetDuration := fmt.Sprintf("%d", int(math.Ceil(maxSegmentDuration)))
 
 	templateData := map[string]interface{}{
