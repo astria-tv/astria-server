@@ -2,6 +2,8 @@ package hls
 
 import (
 	"bytes"
+	"fmt"
+	"math"
 	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"text/template"
 )
@@ -24,29 +26,16 @@ const transcodingMasterPlaylistTemplate = `#EXTM3U
 
 {{ range $ci, $c := .representationCombinations -}}
 {{ range $si, $s := $c.AudioStreams -}}
-#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$c.AudioGroupName}}",NAME="{{$s.Stream.Title}}",CHANNELS="2",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES
-{{- if $s.Stream.EnabledByDefault -}}
-,DEFAULT=YES
-{{ else -}}
-,DEFAULT=NO
-{{ end -}}
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$c.AudioGroupName}}",NAME="{{$s.Stream.Title}}",CHANNELS="2",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end -}}
 {{ end }}
 
 {{ range $i, $s := .subtitlePlaylistItems -}}
-#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="webvtt",NAME="{{$s.Stream.Title}}",LANGUAGE="{{$s.Stream.Language}}",AUTOSELECT=YES,URI="{{$s.URI}}"
-{{- if $s.Stream.EnabledByDefault -}}
-,DEFAULT=YES
-{{ else -}}
-,DEFAULT=NO
-{{ end -}}
+#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="webvtt",NAME="{{$s.Stream.Title}}",LANGUAGE="{{$s.Stream.Language}}",AUTOSELECT=YES,URI="{{$s.URI}}"{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end }}
 
 {{ range $ci, $c := .representationCombinations -}}
-#EXT-X-STREAM-INF:BANDWIDTH={{$c.VideoStream.Representation.BitRate}},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}",AUDIO="{{$c.AudioGroupName}}"
-{{- if $.subtitlePlaylistItems -}}
-,SUBTITLES="webvtt"
-{{- end }}
+#EXT-X-STREAM-INF:BANDWIDTH={{$c.VideoStream.Representation.BitRate}},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}"{{ if $c.VideoStream.Representation.Width }},RESOLUTION={{$c.VideoStream.Representation.Width}}x{{$c.VideoStream.Representation.Height}}{{ end }},AUDIO="{{$c.AudioGroupName}}"{{ if $.subtitlePlaylistItems }},SUBTITLES="webvtt"{{ end }}
 {{$c.VideoStream.Stream.StreamId}}/{{$c.VideoStream.Representation.RepresentationId}}/media.m3u8
 {{ end }}
 `
@@ -57,7 +46,7 @@ otherwise iOS won't even bother trying to play the stream.
 */
 const transcodingMediaPlaylistTemplate = `#EXTM3U
 #EXT-X-VERSION:7
-#EXT-X-TARGETDURATION:1000
+#EXT-X-TARGETDURATION:{{ .targetDuration }}
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="init.mp4"
@@ -104,13 +93,20 @@ func BuildTranscodingMediaPlaylistFromFile(sr ffmpeg.StreamRepresentation) strin
 			ffmpeg.BuildConstantSegmentDurations(totalInterval, ffmpeg.SegmentDuration, 0),
 		})
 	segmentDurationsSeconds := []float64{}
+	maxSegmentDuration := 0.0
 	for _, d := range segmentDurations {
-		segmentDurationsSeconds = append(segmentDurationsSeconds, d.Seconds())
+		ds := d.Seconds()
+		segmentDurationsSeconds = append(segmentDurationsSeconds, ds)
+		if ds > maxSegmentDuration {
+			maxSegmentDuration = ds
+		}
 	}
+	targetDuration := fmt.Sprintf("%d", int(math.Ceil(maxSegmentDuration)))
 
 	templateData := map[string]interface{}{
 		"s":                sr.Stream,
 		"segmentDurations": segmentDurationsSeconds,
+		"targetDuration":   targetDuration,
 	}
 
 	tmpl := transcodingMediaPlaylistTemplate
