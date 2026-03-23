@@ -85,7 +85,7 @@ func NewVideoTranscodingSession(
 		"-copyts",
 		"-start_at_zero",
 		"-map", fmt.Sprintf("0:%d", stream.Stream.StreamId),
-		"-c:0", "libx264", "-crf", "23", "-maxrate", strconv.Itoa(encoderParams.videoBitrate), "-bufsize", strconv.Itoa(encoderParams.videoBitrate * 2),
+		"-c:0", "libx264", "-crf", "28", "-maxrate", strconv.Itoa(encoderParams.videoBitrate), "-bufsize", strconv.Itoa(encoderParams.videoBitrate * 2),
 		"-preset:0", "veryfast",
 		"-force_key_frames", fmt.Sprintf("expr:gte(t,n_forced*%.3f)", SegmentDuration.Seconds()),
 		"-f", "hls",
