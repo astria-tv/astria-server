@@ -1,8 +1,9 @@
 package streaming
 
 import (
-	"gitlab.com/olaris/olaris-server/interfaces/web"
 	"net/http"
+
+	"gitlab.com/olaris/olaris-server/interfaces/web"
 
 	"github.com/gorilla/mux"
 	"github.com/graph-gophers/graphql-transport-ws/graphqlws"
@@ -36,7 +37,7 @@ func (sh *Controller) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/files/{fileLocator:.*}/{sessionID}/dash-manifest.mpd", serveDASHManifest)
 	router.Handle("/files/{fileLocator:.*}/{sessionID}/{streamId}/{representationId}/media.m3u8", AddM3U8Header(http.HandlerFunc(serveHlsTranscodingMediaPlaylist)))
 	router.HandleFunc("/files/{fileLocator:.*}/{sessionID}/{streamId}/{representationId}/{segmentId:[0-9]+}.m4s", buildMediaSegmentHandlerFunc())
-	router.HandleFunc("/files/{fileLocator:.*}/{sessionID}/{streamId}/{representationId}/{segmentId:[0-9]+}.vtt", buildSubtitleSegmentHandlerFunc())
+	router.HandleFunc("/files/{fileLocator:.*}/{sessionID}/{streamId}/{representationId}/{segmentId:[0-9]+}.vtt", buildMediaSegmentHandlerFunc())
 	router.HandleFunc("/files/{fileLocator:.*}/{sessionID}/{streamId}/{representationId}/init.mp4", buildInitHandlerFunc())
 
 	// This handler just serves up the file for downloading. This is also used

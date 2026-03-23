@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"math"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"text/template"
+
+	"gitlab.com/olaris/olaris-server/ffmpeg"
 )
 
 type RepresentationCombination struct {

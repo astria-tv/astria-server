@@ -15,32 +15,26 @@ import (
 )
 
 var videoMIMEType = "video/mp4"
+var audioMIMEType = "audio/mp4"
+var subtitleMIMEType = "text/vtt"
 var defaultSegmentHandlerTimeout = time.Second * 20
 
 // segmentHandler builds a http.HandlerFunc that can serve a segment.
 type segmentHandler struct {
 	timeout      time.Duration
-	mimeType     string
 	segmentIndex *int
 }
 
 // newSegmentHandler creates a new segmentHandler.
 func newSegmentHandler() *segmentHandler {
 	return &segmentHandler{
-		timeout:  defaultSegmentHandlerTimeout,
-		mimeType: videoMIMEType,
+		timeout: defaultSegmentHandlerTimeout,
 	}
 }
 
 // withTimeout modifies the segmentHandler to have a specific timeout duration.
 func (sh *segmentHandler) withTimeout(timeout time.Duration) *segmentHandler {
 	sh.timeout = timeout
-	return sh
-}
-
-// withMimeType modifies the segmentHandler to have a specific MIME type.
-func (sh *segmentHandler) withMimeType(mimeType string) *segmentHandler {
-	sh.mimeType = mimeType
 	return sh
 }
 
@@ -123,11 +117,19 @@ func (sh *segmentHandler) toHandlerFunc() http.HandlerFunc {
 				return
 			}
 
-			w.Header().Set("Content-Type", sh.mimeType)
+			mimeType := videoMIMEType
+			switch playbackSession.TranscodingSession.Stream.Stream.StreamType {
+			case "audio":
+				mimeType = audioMIMEType
+			case "subtitle":
+				mimeType = subtitleMIMEType
+			}
+
+			w.Header().Set("Content-Type", mimeType)
 
 			if playbackSession.TranscodingSession.SegmentStartIndex == 0 {
 				// If the segment doesn't need to be patched, serve the file
-				log.Debug("Serving path ", segmentPath, " with MIME type ", sh.mimeType)
+				log.Debug("Serving path ", segmentPath, " with MIME type ", mimeType)
 				http.ServeFile(w, r, segmentPath)
 			} else {
 				// If it does need to be patched, patch it in memory and serve
@@ -139,7 +141,7 @@ func (sh *segmentHandler) toHandlerFunc() http.HandlerFunc {
 					return
 				}
 
-				log.Debug("Serving patched segment ", segmentPath, " with MIME type ", sh.mimeType)
+				log.Debug("Serving patched segment ", segmentPath, " with MIME type ", mimeType)
 				http.ServeContent(w, r, fileName, time.Now(), patchedSegment)
 			}
 
@@ -166,13 +168,5 @@ func buildMediaSegmentHandlerFunc() http.HandlerFunc {
 func buildInitHandlerFunc() http.HandlerFunc {
 	return newSegmentHandler().
 		withSegmentIndex(InitSegmentIdx).
-		toHandlerFunc()
-}
-
-// buildSubtitleSegmentHandlerFunc builds a segmentHandler that serves subtitle
-// segments.
-func buildSubtitleSegmentHandlerFunc() http.HandlerFunc {
-	return newSegmentHandler().
-		withMimeType("text/vtt").
 		toHandlerFunc()
 }
