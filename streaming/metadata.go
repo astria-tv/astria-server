@@ -33,22 +33,27 @@ func serveMetadata(w http.ResponseWriter, r *http.Request) {
 
 	checkCodecs := []string{}
 
-	transmuxedVideo := ffmpeg.GetTransmuxedRepresentation(streams.GetVideoStream())
-	transcodedVideo := ffmpeg.GetSimilarTranscodedRepresentation(streams.GetVideoStream())
+	vStream, err := streams.GetVideoStream()
+	if err != nil {
+		http.Error(w, "No video stream found: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	transmuxedVideo := ffmpeg.GetTransmuxedRepresentation(vStream)
+	transcodedVideo := ffmpeg.GetSimilarTranscodedRepresentation(vStream)
 
 	checkCodecs = append(checkCodecs,
 		transmuxedVideo.Representation.Codecs,
 		transcodedVideo.Representation.Codecs)
 
-	lowQualityRepresentations := ffmpeg.GetStandardPresetVideoRepresentations(
-		streams.GetVideoStream())
+	lowQualityRepresentations := ffmpeg.GetStandardPresetVideoRepresentations(vStream)
 	for _, r := range lowQualityRepresentations {
 		checkCodecs = append(checkCodecs, r.Representation.Codecs)
 	}
 
 	for _, s := range streams.AudioStreams {
-		transmuxedAudio := ffmpeg.GetTransmuxedRepresentation(streams.GetVideoStream())
-		transcodedAudio := ffmpeg.GetSimilarTranscodedRepresentation(streams.GetVideoStream())
+		transmuxedAudio := ffmpeg.GetTransmuxedRepresentation(s)
+		transcodedAudio := ffmpeg.GetSimilarTranscodedRepresentation(s)
 		lowQualityAudio, _ := ffmpeg.StreamRepresentationFromRepresentationId(
 			s, "preset:128k-audio")
 

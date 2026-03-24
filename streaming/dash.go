@@ -28,12 +28,22 @@ func serveDASHManifest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	videoStream := dash.StreamRepresentations{Stream: streams.GetVideoStream()}
+	vStream, err := streams.GetVideoStream()
+	if err != nil {
+		http.Error(w, "No video stream found: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	videoStream := dash.StreamRepresentations{Stream: vStream}
 	// Get transmuxed or similar transcoded representation
-	fullQualityRepresentation, _ := ffmpeg.GetTransmuxedOrTranscodedRepresentation(streams.GetVideoStream(), capabilities)
+	fullQualityRepresentation, err := ffmpeg.GetTransmuxedOrTranscodedRepresentation(vStream, capabilities)
+	if err != nil {
+		http.Error(w, "Failed to build video representation: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	videoStream.Representations = append(videoStream.Representations, fullQualityRepresentation)
 
-	lowQualityRepresentations := ffmpeg.GetStandardPresetVideoRepresentations(streams.GetVideoStream())
+	lowQualityRepresentations := ffmpeg.GetStandardPresetVideoRepresentations(vStream)
 	for _, r := range lowQualityRepresentations {
 		if r.Representation.BitRate < fullQualityRepresentation.Representation.BitRate {
 			videoStream.Representations = append(videoStream.Representations, r)
@@ -78,5 +88,12 @@ func serveDASHManifest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	manifest := dash.BuildManifest(videoStream, audioStreams, subtitleStreams)
+	if manifest == "" {
+		http.Error(w, "Failed to build DASH manifest", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/dash+xml")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write([]byte(manifest))
 }

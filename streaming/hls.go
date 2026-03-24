@@ -30,8 +30,14 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	vStream, err := streams.GetVideoStream()
+	if err != nil {
+		http.Error(w, "No video stream found: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// Get transmuxed or similar transcoded representation
-	fullQualityRepresentation, _ := ffmpeg.GetTransmuxedOrTranscodedRepresentation(streams.GetVideoStream(), capabilities)
+	fullQualityRepresentation, _ := ffmpeg.GetTransmuxedOrTranscodedRepresentation(vStream, capabilities)
 	videoRepresentations := []ffmpeg.StreamRepresentation{fullQualityRepresentation}
 
 	// TODO(Leon Handreke): I've observed issues with switching from transmuxed representations to transcoded
@@ -41,7 +47,7 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 		// Build lower-quality transcoded versions
 		for _, preset := range []string{"preset:480-1000k-video", "preset:720-3000k-video", "preset:1080-6000k-video"} {
 			r, _ := ffmpeg.StreamRepresentationFromRepresentationId(
-				streams.GetVideoStream(), preset)
+				vStream, preset)
 			if r.Representation.BitRate < fullQualityRepresentation.Representation.BitRate {
 				videoRepresentations = append(videoRepresentations, r)
 			}
@@ -92,7 +98,13 @@ func serveHlsTransmuxingMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	transmuxedVideoStream := ffmpeg.GetTransmuxedRepresentation(streams.GetVideoStream())
+	vStream, err := streams.GetVideoStream()
+	if err != nil {
+		http.Error(w, "No video stream found: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	transmuxedVideoStream := ffmpeg.GetTransmuxedRepresentation(vStream)
 
 	audioStreamRepresentations := []ffmpeg.StreamRepresentation{}
 	for _, s := range streams.AudioStreams {
@@ -129,10 +141,16 @@ func serveHlsTranscodingMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	vStream, err := streams.GetVideoStream()
+	if err != nil {
+		http.Error(w, "No video stream found: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	videoRepresentation1, _ := ffmpeg.StreamRepresentationFromRepresentationId(
-		streams.GetVideoStream(), "preset:480-1000k-video")
+		vStream, "preset:480-1000k-video")
 	videoRepresentation2, _ := ffmpeg.StreamRepresentationFromRepresentationId(
-		streams.GetVideoStream(), "preset:720-3000k-video")
+		vStream, "preset:720-3000k-video")
 	videoRepresentations := []ffmpeg.StreamRepresentation{
 		videoRepresentation1, videoRepresentation2}
 

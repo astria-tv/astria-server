@@ -6,6 +6,7 @@ import (
 	"text/template"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-server/ffmpeg"
 )
 
@@ -16,7 +17,7 @@ const dashManifestTemplate = `<?xml version="1.0" encoding="utf-8"?>
 	xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd"
 	profiles="urn:mpeg:dash:profile:isoff-live:2011"
 	type="static"
-	minBufferTime="PT20M"
+	minBufferTime="PT20S"
 	mediaPresentationDuration="{{ .duration }}"
 	maxSegmentDuration="PT20S">
 	<Period start="PT0S" id="0" duration="{{ .duration }}">
@@ -84,7 +85,10 @@ func BuildManifest(
 
 	buf := bytes.Buffer{}
 	t := template.Must(template.New("manifest").Parse(dashManifestTemplate))
-	t.Execute(&buf, templateData)
+	if err := t.Execute(&buf, templateData); err != nil {
+		log.WithError(err).Error("Failed to execute DASH manifest template")
+		return ""
+	}
 	return buf.String()
 }
 

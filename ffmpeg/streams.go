@@ -182,15 +182,16 @@ func GetStreams(fileLocator filesystem.FileLocator) (*Streams, error) {
 
 }
 
-func (s *Streams) GetVideoStream() Stream {
-	// TODO(Leon Handreke): Figure out something better to do here - does this ever happen?
+func (s *Streams) GetVideoStream() (Stream, error) {
+	if len(s.VideoStreams) == 0 {
+		return Stream{}, fmt.Errorf("file contains no video streams")
+	}
 	if len(s.VideoStreams) > 1 {
 		log.Infof(
 			"File %s does not contain exactly one video stream",
 			s.VideoStreams[0].FileLocator)
 	}
-	return s.VideoStreams[0]
-
+	return s.VideoStreams[0], nil
 }
 
 func buildExternalSubtitleStreams(
