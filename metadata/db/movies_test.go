@@ -1,42 +1,11 @@
 package db_test
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"testing"
 )
-
-var movie db.Movie
-
-func createMovieData() {
-	mi := db.MediaItem{FilePath: "/tmp/test.mkv"}
-	stream := db.Stream{CodecName: "test"}
-	mf := db.MovieFile{MediaItem: mi, Streams: []db.Stream{stream}}
-
-	movie = db.Movie{
-		Title:         "Test",
-		OriginalTitle: "Mad Max: Road Fury",
-		MovieFiles:    []db.MovieFile{mf},
-	}
-	db.SaveMovie(&movie)
-	ps := db.PlayState{
-		MediaUUID: movie.UUID,
-		Finished:  false, Playtime: 33, UserID: 1}
-	db.SavePlayState(&ps)
-}
-
-func setupTest(t *testing.T) func() {
-	dbc := db.NewDb(db.DatabaseOptions{
-		Connection: db.InMemory,
-		LogMode:    false,
-	})
-
-	// Test teardown - return a closure for use by 'defer'
-	return func() {
-		// t is from the outer setupTest scope
-		dbc.Close()
-	}
-}
 
 func TestUUIDable(t *testing.T) {
 	defer setupTest(t)()

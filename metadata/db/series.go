@@ -162,7 +162,7 @@ func BatchUnwatchedEpisodesInSeriesCounts(seriesIDs []uint, userID uint) map[uin
 		"WHERE seasons.series_id IN (?) "+
 		"AND episodes.uuid NOT IN("+
 		"SELECT media_uuid FROM play_states WHERE finished = true AND user_id = ? "+
-		"AND media_uuid IN(SELECT uuid FROM episodes INNER JOIN seasons s2 ON s2.id = episodes.season_id WHERE s2.series_id IN (?))"+
+		"AND media_uuid IN(SELECT episodes.uuid FROM episodes INNER JOIN seasons s2 ON s2.id = episodes.season_id WHERE s2.series_id IN (?))"+
 		") GROUP BY seasons.series_id", seriesIDs, userID, seriesIDs).Scan(&res)
 	for _, r := range res {
 		result[r.SeriesID] = r.Count

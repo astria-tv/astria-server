@@ -2,8 +2,9 @@ package streaming
 
 import (
 	"encoding/json"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"net/http"
+
+	"gitlab.com/olaris/olaris-server/ffmpeg"
 )
 
 type metadataResponse struct {
