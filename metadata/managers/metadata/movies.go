@@ -35,6 +35,8 @@ func (m *MetadataManager) RefreshMovieMetadata(movie *db.Movie) error {
 		return err
 	}
 
+	m.refreshMovieCast(movie)
+
 	m.eventBroker.publish(&MetadataEvent{
 		EventType: MetadataEventTypeMovieUpdated,
 		Payload:   movie,
@@ -53,6 +55,32 @@ func (m *MetadataManager) refreshMovieMetadataFromAgent(movie *db.Movie) error {
 		Println("refreshed metadata for movie")
 
 	return nil
+}
+
+// refreshMovieCast fetches cast from the agent and saves it. Errors are logged
+// but not returned because cast is supplementary data that should not block the
+// overall metadata flow.
+func (m *MetadataManager) refreshMovieCast(movie *db.Movie) {
+	roles, err := m.agent.GetMovieCast(movie.TmdbID)
+	if err != nil {
+		log.WithFields(log.Fields{"title": movie.Title, "tmdbID": movie.TmdbID}).
+			Warnln("Failed to fetch movie cast:", err)
+		return
+	}
+	for i, role := range roles {
+		person, err := db.GetOrCreatePersonByTmdbID(role.Person.TmdbID, role.Person.Name, role.Person.ProfilePath)
+		if err != nil {
+			log.WithFields(log.Fields{"tmdbID": role.Person.TmdbID}).
+				Warnln("Failed to get or create person:", err)
+			continue
+		}
+		roles[i].PersonID = person.ID
+		roles[i].Person = db.Person{}
+	}
+	if err := db.UpdateCastForMovie(movie.ID, roles); err != nil {
+		log.WithFields(log.Fields{"title": movie.Title}).
+			Warnln("Failed to save movie cast:", err)
+	}
 }
 
 // Take a MovieFile object and try to read the TMDB ID from the extended file attributes
@@ -193,6 +221,8 @@ func (m *MetadataManager) GetOrCreateMovieByTmdbID(tmdbID int) (*db.Movie, error
 		return nil, err
 	}
 
+	m.refreshMovieCast(movie)
+
 	m.eventBroker.publish(&MetadataEvent{
 		EventType: MetadataEventTypeMovieAdded,
 		Payload:   movie,
@@ -224,6 +254,7 @@ func (m *MetadataManager) GarbageCollectMovieIfRequired(movieID uint) error {
 	if err := db.DeleteMovieByID(movieID); err != nil {
 		return errors.Wrap(err, "Failed to delete Movie")
 	}
+	db.DeleteCastForMovie(movieID)
 	m.eventBroker.publish(&MetadataEvent{
 		EventType: MetadataEventTypeMovieDeleted,
 		Payload:   movie,

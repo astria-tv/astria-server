@@ -58,6 +58,34 @@ func (m *MetadataManager) RefreshAgentMetadataWithMissingArt() {
 	wg.Wait()
 }
 
+// RefreshCastForItemsWithMissingCast finds all movies and series that have no
+// cast data and fetches it from the agent. This is a self-healing backfill:
+// once every item has cast, the queries return nothing and this is a no-op.
+func (m *MetadataManager) RefreshCastForItemsWithMissingCast() {
+	movies := db.FindMoviesWithoutCast()
+	series := db.FindSeriesWithoutCast()
+
+	if len(movies) == 0 && len(series) == 0 {
+		return
+	}
+
+	log.Infof("Backfilling cast for %d movies and %d series.", len(movies), len(series))
+
+	for i := range movies {
+		movie := &movies[i]
+		mhelpers.WithLock(func() {
+			m.refreshMovieCast(movie)
+		}, movie.UUID)
+	}
+
+	for i := range series {
+		s := &series[i]
+		mhelpers.WithLock(func() {
+			m.refreshSeriesCast(s)
+		}, s.UUID)
+	}
+}
+
 // RefreshAgentMetadataForUUID takes an UUID of a mediaitem and refreshes all metadata
 func (m *MetadataManager) RefreshAgentMetadataForUUID(UUID string) bool {
 

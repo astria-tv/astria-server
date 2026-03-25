@@ -1,11 +1,12 @@
 package agents
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/ryanbradynd05/go-tmdb"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"time"
 )
 
 const tmdbAPIKey = "0cdacd9ab172ac6ff69c8d84b2c938a8"
@@ -139,4 +140,77 @@ func (a *TmdbAgent) TmdbSearchTv(
 	options map[string]string,
 ) (*tmdb.TvSearchResults, error) {
 	return a.Tmdb.SearchTv(name, options)
+}
+
+// GetMovieCast retrieves the cast for the given movie from TMDB.
+// It returns CastRole structs with the Person populated (TmdbID, Name, ProfilePath).
+// The caller is responsible for persisting Person records and setting PersonID.
+func (a *TmdbAgent) GetMovieCast(tmdbID int) ([]db.CastRole, error) {
+	credits, err := a.Tmdb.GetMovieCredits(tmdbID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	limit := len(credits.Cast)
+	if limit > db.MaxCastRoles {
+		limit = db.MaxCastRoles
+	}
+
+	roles := make([]db.CastRole, limit)
+	for i := 0; i < limit; i++ {
+		c := credits.Cast[i]
+		roles[i] = db.CastRole{
+			Character: c.Character,
+			Order:     c.Order,
+			Person: db.Person{
+				TmdbID:      c.ID,
+				Name:        c.Name,
+				ProfilePath: c.ProfilePath,
+			},
+		}
+	}
+	return roles, nil
+}
+
+// GetSeriesCast retrieves the cast for the given TV series from TMDB.
+func (a *TmdbAgent) GetSeriesCast(tmdbID int) ([]db.CastRole, error) {
+	credits, err := a.Tmdb.GetTvCredits(tmdbID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	limit := len(credits.Cast)
+	if limit > db.MaxCastRoles {
+		limit = db.MaxCastRoles
+	}
+
+	roles := make([]db.CastRole, limit)
+	for i := 0; i < limit; i++ {
+		c := credits.Cast[i]
+		roles[i] = db.CastRole{
+			Character: c.Character,
+			Order:     c.Order,
+			Person: db.Person{
+				TmdbID:      c.ID,
+				Name:        c.Name,
+				ProfilePath: c.ProfilePath,
+			},
+		}
+	}
+	return roles, nil
+}
+
+// UpdatePersonMD fetches full person details from TMDB and updates the struct.
+func (a *TmdbAgent) UpdatePersonMD(person *db.Person, tmdbID int) error {
+	p, err := a.Tmdb.GetPersonInfo(tmdbID, nil)
+	if err != nil {
+		return err
+	}
+	person.Name = p.Name
+	person.ProfilePath = p.ProfilePath
+	person.Biography = p.Biography
+	person.Birthday = p.Birthday
+	person.Deathday = p.Deathday
+	person.PlaceOfBirth = p.PlaceOfBirth
+	return nil
 }

@@ -15,6 +15,9 @@ type MetadataRetrievalAgent interface {
 	UpdateSeasonMD(season *db.Season, seriesTmdbID int, seasonNum int) error
 	UpdateEpisodeMD(episode *db.Episode, seriesTmdbID int, seasonNum int, episodeNum int) error
 	UpdateSeriesMD(series *db.Series, tmdbID int) error
+	GetMovieCast(tmdbID int) ([]db.CastRole, error)
+	GetSeriesCast(tmdbID int) ([]db.CastRole, error)
+	UpdatePersonMD(person *db.Person, tmdbID int) error
 	// TODO(Leon Handreke): This totally breaks the abstraction, but we need the interface
 	//  to be able to fake it.
 	TmdbSearchMovie(name string, options map[string]string) (*tmdb.MovieSearchResults, error)

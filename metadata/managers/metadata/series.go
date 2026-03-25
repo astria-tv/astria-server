@@ -71,6 +71,8 @@ func (m *MetadataManager) RefreshSeriesMetadata(series *db.Series) error {
 		return err
 	}
 
+	m.refreshSeriesCast(series)
+
 	m.eventBroker.publish(&MetadataEvent{
 		EventType: MetadataEventTypeSeriesUpdated,
 		Payload:   series,
@@ -81,6 +83,31 @@ func (m *MetadataManager) RefreshSeriesMetadata(series *db.Series) error {
 // refreshSeriesMetadataFromAgent refreshes metadata but does not save.
 func (m *MetadataManager) refreshSeriesMetadataFromAgent(series *db.Series) error {
 	return m.agent.UpdateSeriesMD(series, series.TmdbID)
+}
+
+// refreshSeriesCast fetches cast from the agent and saves it. Errors are logged
+// but not returned because cast is supplementary data.
+func (m *MetadataManager) refreshSeriesCast(series *db.Series) {
+	roles, err := m.agent.GetSeriesCast(series.TmdbID)
+	if err != nil {
+		log.WithFields(log.Fields{"name": series.Name, "tmdbID": series.TmdbID}).
+			Warnln("Failed to fetch series cast:", err)
+		return
+	}
+	for i, role := range roles {
+		person, err := db.GetOrCreatePersonByTmdbID(role.Person.TmdbID, role.Person.Name, role.Person.ProfilePath)
+		if err != nil {
+			log.WithFields(log.Fields{"tmdbID": role.Person.TmdbID}).
+				Warnln("Failed to get or create person:", err)
+			continue
+		}
+		roles[i].PersonID = person.ID
+		roles[i].Person = db.Person{}
+	}
+	if err := db.UpdateCastForSeries(series.ID, roles); err != nil {
+		log.WithFields(log.Fields{"name": series.Name}).
+			Warnln("Failed to save series cast:", err)
+	}
 }
 
 func (m *MetadataManager) RefreshEpisodeMetadata(ep *db.Episode) error {
@@ -295,6 +322,8 @@ func (m *MetadataManager) GetOrCreateEpisodeByTmdbID(
 			return nil, err
 		}
 
+		m.refreshSeriesCast(season.Series)
+
 		m.eventBroker.publish(&MetadataEvent{
 			EventType: MetadataEventTypeSeriesAdded,
 			Payload:   season.Series,
@@ -437,6 +466,7 @@ func (m *MetadataManager) GarbageCollectEpisodeIfRequired(episodeID uint) error 
 	if err := db.DeleteSeries(series.ID); err != nil {
 		return errors.Wrap(err, "Failed to delete Series")
 	}
+	db.DeleteCastForSeries(series.ID)
 	m.eventBroker.publish(&MetadataEvent{
 		EventType: MetadataEventTypeSeriesDeleted,
 		Payload:   series,

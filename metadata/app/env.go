@@ -93,6 +93,7 @@ func NewMDContext(
 			log.Debugln("Running maintenance jobs")
 			metadataRefreshTicker.Reset(2 * time.Hour)
 			env.MetadataManager.RefreshAgentMetadataWithMissingArt()
+			env.MetadataManager.RefreshCastForItemsWithMissingCast()
 
 			for _, season := range db.FindSeasonsWithoutEpisodes() {
 				log.WithFields(log.Fields{"season #": season.SeasonNumber}).Infoln("Found season with no episodes attached, cleaning it up.")

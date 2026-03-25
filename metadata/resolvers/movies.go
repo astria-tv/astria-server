@@ -157,6 +157,16 @@ func (r *MovieResolver) OnWatchlist(ctx context.Context) bool {
 	return wlMap[r.r.UUID]
 }
 
+// Cast returns the cast for this movie.
+func (r *MovieResolver) Cast() []*CastRoleResolver {
+	cast := db.FindCastForMovie(r.r.ID)
+	resolvers := make([]*CastRoleResolver, len(cast))
+	for i := range cast {
+		resolvers[i] = &CastRoleResolver{r: cast[i]}
+	}
+	return resolvers
+}
+
 // PlayState returns playstate for given user.
 func (r *MovieResolver) PlayState(ctx context.Context) *PlayStateResolver {
 	if r.playState != nil {

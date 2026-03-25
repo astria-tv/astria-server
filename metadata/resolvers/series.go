@@ -149,6 +149,16 @@ func (r *SeriesResolver) OnWatchlist(ctx context.Context) bool {
 	return wlMap[r.r.UUID]
 }
 
+// Cast returns the cast for this series.
+func (r *SeriesResolver) Cast() []*CastRoleResolver {
+	cast := db.FindCastForSeries(r.r.ID)
+	resolvers := make([]*CastRoleResolver, len(cast))
+	for i := range cast {
+		resolvers[i] = &CastRoleResolver{r: cast[i]}
+	}
+	return resolvers
+}
+
 // UnwatchedEpisodesCount returns the amount of unwatched episodes for the given season
 func (r *SeriesResolver) UnwatchedEpisodesCount(ctx context.Context) int32 {
 	if r.unwatchedEpisodesCount != nil {
