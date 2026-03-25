@@ -109,6 +109,7 @@ func NewDb(options DatabaseOptions) *gorm.DB {
 var allModels = []interface{}{
 	&Movie{}, &MovieFile{}, &Library{}, &Series{}, &Season{}, &Episode{},
 	&EpisodeFile{}, &User{}, &Invite{}, &PlayState{}, &Stream{},
+	&WatchlistItem{},
 }
 
 func initSchema(tx *gorm.DB) error {

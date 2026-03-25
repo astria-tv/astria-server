@@ -62,17 +62,21 @@ func (r *Resolver) Series(ctx context.Context, args *seriesQueryArgs) []*SeriesR
 		series, _ = db.FindAllSeries(qd)
 	}
 
-	// Batch-load unwatched episode counts
+	// Batch-load unwatched episode counts and watchlist status
 	seriesIDs := make([]uint, len(series))
+	seriesUUIDs := make([]string, len(series))
 	for i, s := range series {
 		seriesIDs[i] = s.ID
+		seriesUUIDs[i] = s.UUID
 	}
 	unwatchedCounts := db.BatchUnwatchedEpisodesInSeriesCounts(seriesIDs, userID)
+	watchlistMap := db.IsOnWatchlistByUUIDs(seriesUUIDs, userID)
 
 	var resolvers []*SeriesResolver
 	for _, s := range series {
 		count := int32(unwatchedCounts[s.ID])
-		resolvers = append(resolvers, &SeriesResolver{r: *s, unwatchedEpisodesCount: &count})
+		onWL := watchlistMap[s.UUID]
+		resolvers = append(resolvers, &SeriesResolver{r: *s, unwatchedEpisodesCount: &count, onWatchlist: &onWL})
 	}
 
 	return resolvers
@@ -82,6 +86,7 @@ func (r *Resolver) Series(ctx context.Context, args *seriesQueryArgs) []*SeriesR
 type SeriesResolver struct {
 	r                      db.Series
 	unwatchedEpisodesCount *int32
+	onWatchlist            *bool
 }
 
 // Name returns name.
@@ -132,6 +137,16 @@ func (r *SeriesResolver) BackdropPath() string {
 // TmdbID returns tmdb id
 func (r *SeriesResolver) TmdbID() int32 {
 	return int32(r.r.TmdbID)
+}
+
+// OnWatchlist returns whether this series is on the user's watchlist.
+func (r *SeriesResolver) OnWatchlist(ctx context.Context) bool {
+	if r.onWatchlist != nil {
+		return *r.onWatchlist
+	}
+	userID, _ := auth.UserID(ctx)
+	wlMap := db.IsOnWatchlistByUUIDs([]string{r.r.UUID}, userID)
+	return wlMap[r.r.UUID]
 }
 
 // UnwatchedEpisodesCount returns the amount of unwatched episodes for the given season

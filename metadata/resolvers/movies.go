@@ -42,15 +42,17 @@ func (r *Resolver) Movies(ctx context.Context, args *movieQueryArgs) []*MovieRes
 		movies = db.FindAllMovies(qd)
 	}
 
-	// Batch-load play states for all movies
+	// Batch-load play states and watchlist status for all movies
 	uuids := make([]string, len(movies))
 	for i := range movies {
 		uuids[i] = movies[i].UUID
 	}
 	playStates := db.FindPlayStatesByUUIDs(uuids, userID)
+	watchlistMap := db.IsOnWatchlistByUUIDs(uuids, userID)
 
 	for _, movie := range movies {
-		mov := MovieResolver{r: movie, playState: playStates[movie.UUID]}
+		onWL := watchlistMap[movie.UUID]
+		mov := MovieResolver{r: movie, playState: playStates[movie.UUID], onWatchlist: &onWL}
 		l = append(l, &mov)
 	}
 	return l
@@ -58,8 +60,9 @@ func (r *Resolver) Movies(ctx context.Context, args *movieQueryArgs) []*MovieRes
 
 // MovieResolver is a resolver for movies.
 type MovieResolver struct {
-	r         db.Movie
-	playState *db.PlayState
+	r           db.Movie
+	playState   *db.PlayState
+	onWatchlist *bool
 }
 
 // Files return files for movie.
@@ -142,6 +145,16 @@ func (r *MovieResolver) ImdbID() string {
 // TmdbID returns tmdb id
 func (r *MovieResolver) TmdbID() int32 {
 	return int32(r.r.TmdbID)
+}
+
+// OnWatchlist returns whether this movie is on the user's watchlist.
+func (r *MovieResolver) OnWatchlist(ctx context.Context) bool {
+	if r.onWatchlist != nil {
+		return *r.onWatchlist
+	}
+	userID, _ := auth.UserID(ctx)
+	wlMap := db.IsOnWatchlistByUUIDs([]string{r.r.UUID}, userID)
+	return wlMap[r.r.UUID]
 }
 
 // PlayState returns playstate for given user.
