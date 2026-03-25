@@ -112,65 +112,16 @@ var allModels = []interface{}{
 }
 
 func initSchema(tx *gorm.DB) error {
-	return db.AutoMigrate(allModels...).Error
+	return tx.AutoMigrate(allModels...).Error
 }
 
 func migrateSchema(db *gorm.DB) error {
-	// Migrate the db-schema
-	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
-		// you migrations here
-		{
-			// All our filepaths in the DB were migrated to "file locators" to support
-			// the new rclone library types.
-			ID: "2019-06-19-new-filepaths",
-			Migrate: func(tx *gorm.DB) error {
-				type MovieFile struct {
-					gorm.Model
-					FilePath string
-				}
-				var movieFiles []MovieFile
-				db.Find(&movieFiles)
-				for _, f := range movieFiles {
-					f.FilePath = "local#" + f.FilePath
-					db.Save(f)
-				}
-
-				type EpisodeFile struct {
-					gorm.Model
-					FilePath string
-				}
-				var episodeFiles []EpisodeFile
-				db.Find(&episodeFiles)
-				for _, f := range episodeFiles {
-					f.FilePath = "local#" + f.FilePath
-					db.Save(f)
-				}
-
-				return nil
-			},
-			Rollback: nil,
-		},
-		{
-			// We now just have EpisodeFiles with no Episodes attached
-			ID: "2019-08-03-remove-unidentified-episodes",
-			Migrate: func(tx *gorm.DB) error {
-				return db.Exec("DELETE FROM episodes WHERE tmdb_id = 0;").Error
-			},
-		}, {
-			// We now just have EpisodeFiles with no Episodes attached
-			ID: "2019-08-03-remove-unidentified-movies",
-			Migrate: func(tx *gorm.DB) error {
-				return db.Exec("DELETE FROM movies WHERE tmdb_id = 0;").Error
-			},
-		},
-	})
-
+	m := gormigrate.New(db, gormigrate.DefaultOptions, allMigrations())
 	m.InitSchema(initSchema)
-	err := m.Migrate()
-	if err != nil {
+	if err := m.Migrate(); err != nil {
 		return err
 	}
 
-	// By default, just do the auto migrations automatically.
+	// Apply any new column/table additions outside of versioned migrations.
 	return db.AutoMigrate(allModels...).Error
 }
