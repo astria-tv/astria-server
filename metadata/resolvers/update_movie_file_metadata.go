@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+
 	"gitlab.com/olaris/olaris-server/metadata/db"
 )
 
@@ -55,8 +56,8 @@ func (r *Resolver) UpdateMovieFileMetadata(
 }
 
 // MediaItem returns the media item
-func (r *UpdateMovieFileMetadataPayloadResolver) MediaItem() *MediaItemResolver {
-	return &MediaItemResolver{r: r.mediaItem}
+func (r *UpdateMovieFileMetadataPayloadResolver) MediaItem() *MovieOrEpisodeResolver {
+	return &MovieOrEpisodeResolver{r: r.mediaItem}
 }
 
 // Error returns error.

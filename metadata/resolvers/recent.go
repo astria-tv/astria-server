@@ -30,7 +30,7 @@ func (a ByUpdatedAt) Less(i, j int) bool {
 }
 
 // RecentlyAdded returns recently added media content.
-func (r *Resolver) RecentlyAdded(ctx context.Context) *[]*MediaItemResolver {
+func (r *Resolver) RecentlyAdded(ctx context.Context) *[]*MovieOrEpisodeResolver {
 	userID, _ := auth.UserID(ctx)
 	sortables := []sortable{}
 
@@ -55,13 +55,13 @@ func (r *Resolver) RecentlyAdded(ctx context.Context) *[]*MediaItemResolver {
 	}
 	playStates := db.FindPlayStatesByUUIDs(uuids, userID)
 
-	l := []*MediaItemResolver{}
+	l := []*MovieOrEpisodeResolver{}
 	for _, item := range sortables {
 		if res, ok := item.(*db.Episode); ok {
-			l = append(l, &MediaItemResolver{r: &EpisodeResolver{r: *res, playState: playStates[res.UUID]}})
+			l = append(l, &MovieOrEpisodeResolver{r: &EpisodeResolver{r: *res, playState: playStates[res.UUID]}})
 		}
 		if res, ok := item.(*db.Movie); ok {
-			l = append(l, &MediaItemResolver{r: &MovieResolver{r: *res, playState: playStates[res.UUID]}})
+			l = append(l, &MovieOrEpisodeResolver{r: &MovieResolver{r: *res, playState: playStates[res.UUID]}})
 		}
 	}
 

@@ -1,18 +1,18 @@
 package resolvers
 
-// MediaItemResolver is a resolver around media types.
-type MediaItemResolver struct {
+// MovieOrEpisodeResolver resolves the MovieOrEpisode union (Movie | Episode).
+type MovieOrEpisodeResolver struct {
 	r interface{}
 }
 
 // ToMovie tries to convert media to Movie
-func (r *MediaItemResolver) ToMovie() (*MovieResolver, bool) {
+func (r *MovieOrEpisodeResolver) ToMovie() (*MovieResolver, bool) {
 	res, ok := r.r.(*MovieResolver)
 	return res, ok
 }
 
 // ToEpisode tries to convert media to Episode
-func (r *MediaItemResolver) ToEpisode() (*EpisodeResolver, bool) {
+func (r *MovieOrEpisodeResolver) ToEpisode() (*EpisodeResolver, bool) {
 	res, ok := r.r.(*EpisodeResolver)
 	return res, ok
 }

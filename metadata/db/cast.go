@@ -62,6 +62,17 @@ func FindPersonByTmdbID(tmdbID int) (*Person, error) {
 	return &person, nil
 }
 
+// FindCastRolesForPerson returns all cast roles for a given person, ordered by
+// owner type then order. Each role's OwnerID and OwnerType can be used to look
+// up the associated Movie or Series.
+func FindCastRolesForPerson(personID uint) []CastRole {
+	var roles []CastRole
+	db.Where("person_id = ?", personID).
+		Order("owner_type ASC, `order` ASC").
+		Find(&roles)
+	return roles
+}
+
 // SavePerson inserts or updates a person record.
 func SavePerson(person *Person) error {
 	return db.Save(person).Error

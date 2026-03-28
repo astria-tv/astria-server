@@ -10,7 +10,7 @@ import (
 )
 
 // UpNext returns episode/movie that could populate a dashboard.
-func (r *Resolver) UpNext(ctx context.Context) *[]*MediaItemResolver {
+func (r *Resolver) UpNext(ctx context.Context) *[]*MovieOrEpisodeResolver {
 	userID, _ := auth.UserID(ctx)
 	sortables := []sortable{}
 
@@ -35,13 +35,13 @@ func (r *Resolver) UpNext(ctx context.Context) *[]*MediaItemResolver {
 	}
 	playStates := db.FindPlayStatesByUUIDs(uuids, userID)
 
-	l := []*MediaItemResolver{}
+	l := []*MovieOrEpisodeResolver{}
 	for _, item := range sortables {
 		if res, ok := item.(*db.Episode); ok {
-			l = append(l, &MediaItemResolver{r: &EpisodeResolver{r: *res, playState: playStates[res.UUID]}})
+			l = append(l, &MovieOrEpisodeResolver{r: &EpisodeResolver{r: *res, playState: playStates[res.UUID]}})
 		}
 		if res, ok := item.(*db.Movie); ok {
-			l = append(l, &MediaItemResolver{r: &MovieResolver{r: *res, playState: playStates[res.UUID]}})
+			l = append(l, &MovieOrEpisodeResolver{r: &MovieResolver{r: *res, playState: playStates[res.UUID]}})
 		}
 	}
 

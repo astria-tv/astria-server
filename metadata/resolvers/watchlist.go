@@ -7,23 +7,6 @@ import (
 	"gitlab.com/olaris/olaris-server/metadata/db"
 )
 
-// WatchlistMediaItemResolver resolves the WatchlistMediaItem union (Movie | Series).
-type WatchlistMediaItemResolver struct {
-	r interface{}
-}
-
-// ToMovie tries to convert to Movie.
-func (r *WatchlistMediaItemResolver) ToMovie() (*MovieResolver, bool) {
-	res, ok := r.r.(*MovieResolver)
-	return res, ok
-}
-
-// ToSeries tries to convert to Series.
-func (r *WatchlistMediaItemResolver) ToSeries() (*SeriesResolver, bool) {
-	res, ok := r.r.(*SeriesResolver)
-	return res, ok
-}
-
 type addToWatchlistArgs struct {
 	MediaUUID string
 	MediaType string
@@ -34,11 +17,11 @@ type removeFromWatchlistArgs struct {
 }
 
 // Watchlist returns all movies and series on the current user's watchlist.
-func (r *Resolver) Watchlist(ctx context.Context) []*WatchlistMediaItemResolver {
+func (r *Resolver) Watchlist(ctx context.Context) []*MovieOrSeriesResolver {
 	userID, _ := auth.UserID(ctx)
 	items, _ := db.GetWatchlistItems(userID)
 
-	var resolvers []*WatchlistMediaItemResolver
+	var resolvers []*MovieOrSeriesResolver
 	for _, item := range items {
 		switch item.MediaType {
 		case "movie":
@@ -46,13 +29,13 @@ func (r *Resolver) Watchlist(ctx context.Context) []*WatchlistMediaItemResolver 
 			if err != nil {
 				continue
 			}
-			resolvers = append(resolvers, &WatchlistMediaItemResolver{r: &MovieResolver{r: *movie}})
+			resolvers = append(resolvers, &MovieOrSeriesResolver{r: &MovieResolver{r: *movie}})
 		case "series":
 			series, err := db.FindSeriesByUUID(item.MediaUUID)
 			if err != nil {
 				continue
 			}
-			resolvers = append(resolvers, &WatchlistMediaItemResolver{r: &SeriesResolver{r: *series}})
+			resolvers = append(resolvers, &MovieOrSeriesResolver{r: &SeriesResolver{r: *series}})
 		}
 	}
 	return resolvers
