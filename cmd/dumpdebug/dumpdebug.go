@@ -8,29 +8,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/goava/di"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/helpers"
 	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
-
-type DumpDebugCommand cmd.Command
-
-func RegisterDumpDebugCommand(rootCommand root.RootCommand, dumpDebugCommand DumpDebugCommand) {
-	rootCommand.GetCobraCommand().AddCommand(dumpDebugCommand.GetCobraCommand())
-}
-
-func New() di.Option {
-	return di.Options(
-		di.Provide(NewDumpDebugCommand, di.As(new(DumpDebugCommand))),
-		di.Invoke(RegisterDumpDebugCommand),
-	)
-}
 
 func NewDumpDebugCommand() *cmd.CobraCommand {
 	c := &cobra.Command{

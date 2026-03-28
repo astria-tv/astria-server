@@ -9,7 +9,6 @@ require (
 	github.com/abema/go-mp4 v0.6.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.5.1
-	github.com/goava/di v1.11.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/grandcat/zeroconf v1.0.0

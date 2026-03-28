@@ -14,7 +14,6 @@ import (
 	"gitlab.com/olaris/olaris-server/interfaces/web"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/goava/di"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/grandcat/zeroconf"
@@ -23,7 +22,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/ffmpeg"
 	"gitlab.com/olaris/olaris-server/metadata"
 	"gitlab.com/olaris/olaris-server/metadata/agents"
@@ -34,32 +32,8 @@ import (
 	"gitlab.com/olaris/olaris-server/streaming"
 )
 
-type ServeCommand cmd.Command
 
-func New() di.Option {
-	return di.Options(
-		streaming.Options(),
-		di.Provide(NewServeCommand, di.As(new(ServeCommand))),
-		di.Invoke(RegisterServeCommand),
-	)
-}
-
-func RegisterServeCommand(rootCommand root.RootCommand, serveCommand ServeCommand) {
-	rootCommand.GetCobraCommand().AddCommand(serveCommand.GetCobraCommand())
-
-	rootCommand.GetCobraCommand().Flags().AddFlagSet(serveCommand.GetCobraCommand().Flags())
-	rootCommand.GetCobraCommand().Run = serveCommand.GetCobraCommand().Run
-}
-
-// Parameters contains the parameters that are required when creating a new
-// serve command.
-type Parameters struct {
-	di.Inject
-
-	StreamingController web.Controller `di:"type=streaming"`
-}
-
-func NewServeCommand(params *Parameters) *cmd.CobraCommand {
+func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 	c := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the olaris server",
@@ -124,7 +98,7 @@ func NewServeCommand(params *Parameters) *cmd.CobraCommand {
 			metadata.RegisterRoutes(mctx, metaRouter)
 
 			streamingRouter := rr.PathPrefix("/s").Subrouter()
-			params.StreamingController.RegisterRoutes(streamingRouter)
+			streamingController.RegisterRoutes(streamingRouter)
 
 			// This is just to make sure that no temp files stay behind in case the
 			// garbage collection below didn't work properly for some reason.

@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/goava/di"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/cmd/identify"
 	"gitlab.com/olaris/olaris-server/filesystem"
 	"gitlab.com/olaris/olaris-server/metadata/agents"
 	"gitlab.com/olaris/olaris-server/metadata/app"
@@ -15,19 +13,6 @@ import (
 	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
 	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
-
-type identifyMovieCommand cmd.Command
-
-func RegisterIdentifyMovieCommand(rootCommand identify.IdentifyCommand, identifyMovieCommand identifyMovieCommand) {
-	rootCommand.GetCobraCommand().AddCommand(identifyMovieCommand.GetCobraCommand())
-}
-
-func New() di.Option {
-	return di.Options(
-		di.Provide(NewIdentifyMovieCommand, di.As(new(identifyMovieCommand))),
-		di.Invoke(RegisterIdentifyMovieCommand),
-	)
-}
 
 func NewIdentifyMovieCommand() *cmd.CobraCommand {
 	var filePath string

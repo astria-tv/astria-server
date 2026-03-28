@@ -3,33 +3,20 @@ package main
 import (
 	"os"
 
-	"github.com/goava/di"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"gitlab.com/olaris/olaris-server/cmd"
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/helpers"
 	"gitlab.com/olaris/olaris-server/pkg/config"
-	"gitlab.com/olaris/olaris-server/utils"
 )
 
 func main() {
 	config.RegisterFlags(registerGlobalFlags)
 	config.InitViper()
 
-	container, err := di.New(
-		cmd.New(),
-	)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
-	var rootCommand root.RootCommand
-	utils.MustResolve(container, &rootCommand)
-
-	err = rootCommand.GetCobraCommand().Execute()
+	err := cmd.New().GetCobraCommand().Execute()
 	if err != nil {
 		logrus.Fatal(err)
 	}

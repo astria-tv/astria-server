@@ -3,29 +3,14 @@ package library_create
 import (
 	"time"
 
-	"github.com/goava/di"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/cmd/root"
 	"gitlab.com/olaris/olaris-server/metadata/app"
 	"gitlab.com/olaris/olaris-server/metadata/db"
 	"gitlab.com/olaris/olaris-server/pkg/cmd"
 )
 
 const defaultTimeOffset = -24 * time.Hour
-
-type LibraryCreateCommand cmd.Command
-
-func RegisterLibraryCreateCommand(rootCommand root.RootCommand, libraryCreateCommand LibraryCreateCommand) {
-	rootCommand.GetCobraCommand().AddCommand(libraryCreateCommand.GetCobraCommand())
-}
-
-func New() di.Option {
-	return di.Options(
-		di.Provide(NewLibraryCreateCommand, di.As(new(LibraryCreateCommand))),
-		di.Invoke(RegisterLibraryCreateCommand),
-	)
-}
 
 func NewLibraryCreateCommand() *cmd.CobraCommand {
 	var name string
