@@ -78,11 +78,11 @@ func setHlsSegmentOptions(args []string, segmentStartIndex int) []string {
 		args = append(args, []string{
 			// If we are not starting with the first segment, indicate that the
 			// fragment is discontinuous
-			"-hls_segment_options", "movflags=dash+frag_discont",
+			"-hls_segment_options", "movflags=dash+default_base_moof+frag_discont",
 		}...)
 	} else {
 		args = append(args, []string{
-			"-hls_segment_options", "movflags=dash",
+			"-hls_segment_options", "movflags=dash+default_base_moof",
 		}...)
 	}
 

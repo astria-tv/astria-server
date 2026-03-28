@@ -12,6 +12,28 @@ import (
 	"gitlab.com/olaris/olaris-server/metadata/auth"
 )
 
+// maxAudioBitRate returns the highest bitrate among a set of audio representations.
+func maxAudioBitRate(streams []ffmpeg.StreamRepresentation) int {
+	max := 0
+	for _, s := range streams {
+		if s.Representation.BitRate > max {
+			max = s.Representation.BitRate
+		}
+	}
+	return max
+}
+
+// defaultAudioCodecs returns the codec string of the default audio rendition,
+// falling back to the first stream if none is marked as default.
+func defaultAudioCodecs(streams []ffmpeg.StreamRepresentation) string {
+	for _, s := range streams {
+		if s.Stream.EnabledByDefault {
+			return s.Representation.Codecs
+		}
+	}
+	return streams[0].Representation.Codecs
+}
+
 func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 	fileLocator, statusErr := getFileLocatorOrFail(r)
 	if statusErr != nil {
@@ -74,8 +96,8 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 			VideoStream:    v,
 			AudioStreams:   audioStreamRepresentations,
 			AudioGroupName: "audio",
-			// TODO(Leon Handreke): Is just using the first one always correct?
-			AudioCodecs: audioStreamRepresentations[0].Representation.Codecs,
+			AudioCodecs:    defaultAudioCodecs(audioStreamRepresentations),
+			AudioBitRate:   maxAudioBitRate(audioStreamRepresentations),
 		})
 	}
 
@@ -121,8 +143,8 @@ func serveHlsTransmuxingMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 				VideoStream:    transmuxedVideoStream,
 				AudioStreams:   audioStreamRepresentations,
 				AudioGroupName: "transmuxed",
-				// TODO(Leon Handreke): Fill this from the audio codecs.
-				AudioCodecs: "mp4a.40.2",
+				AudioCodecs:    defaultAudioCodecs(audioStreamRepresentations),
+				AudioBitRate:   maxAudioBitRate(audioStreamRepresentations),
 			},
 		},
 		subtitlePlaylistItems)
@@ -175,6 +197,7 @@ func serveHlsTranscodingMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 			}
 			c.AudioStreams = append(c.AudioStreams, audioRepresentation)
 		}
+		c.AudioBitRate = maxAudioBitRate(c.AudioStreams)
 		representationCombinations = append(representationCombinations, c)
 	}
 

@@ -14,6 +14,12 @@ type RepresentationCombination struct {
 	AudioStreams   []ffmpeg.StreamRepresentation
 	AudioGroupName string
 	AudioCodecs    string
+	AudioBitRate   int
+}
+
+// TotalBandwidth returns video + audio bitrate combined, as required by the HLS spec.
+func (c RepresentationCombination) TotalBandwidth() int {
+	return c.VideoStream.Representation.BitRate + c.AudioBitRate
 }
 
 type SubtitlePlaylistItem struct {
@@ -41,7 +47,7 @@ const transcodingMasterPlaylistTemplate = `#EXTM3U
 {{ end }}
 
 {{ range $ci, $c := .representationCombinations -}}
-#EXT-X-STREAM-INF:BANDWIDTH={{$c.VideoStream.Representation.BitRate}},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}"{{ if $c.VideoStream.Representation.Width }},RESOLUTION={{$c.VideoStream.Representation.Width}}x{{$c.VideoStream.Representation.Height}}{{ end }},AUDIO="{{$c.AudioGroupName}}"{{ if $.subtitlePlaylistItems }},SUBTITLES="webvtt"{{ end }}
+#EXT-X-STREAM-INF:BANDWIDTH={{ $c.TotalBandwidth }},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}"{{ if $c.VideoStream.Representation.Width }},RESOLUTION={{$c.VideoStream.Representation.Width}}x{{$c.VideoStream.Representation.Height}}{{ end }},AUDIO="{{$c.AudioGroupName}}"{{ if $.subtitlePlaylistItems }},SUBTITLES="webvtt"{{ end }}
 {{$c.VideoStream.Stream.StreamId}}/{{$c.VideoStream.Representation.RepresentationId}}/media.m3u8
 {{ end }}
 `
@@ -53,6 +59,7 @@ otherwise iOS won't even bother trying to play the stream.
 const transcodingMediaPlaylistTemplate = `#EXTM3U
 #EXT-X-VERSION:7
 #EXT-X-TARGETDURATION:{{ .targetDuration }}
+#EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="init.mp4"
