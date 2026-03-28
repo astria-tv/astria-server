@@ -3,19 +3,22 @@ package auth
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/metadata/db"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"gitlab.com/olaris/olaris-server/metadata/db"
 )
 
 const DefaultLoginTokenValidity = 24 * time.Hour
+const RememberMeTokenValidity = 30 * 24 * time.Hour
 
 type userRequest struct {
-	Username string `json:"username"`
-	Code     string `json:"code"`
-	Password string `json:"password"`
+	Username   string `json:"username"`
+	Code       string `json:"code"`
+	Password   string `json:"password"`
+	RememberMe bool   `json:"remember_me"`
 }
 type userRequestRes struct {
 	HasError bool   `json:"has_error"`
@@ -63,22 +66,31 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 
 	u := db.User{Username: ur.Username}
 
-	if u.ValidPassword(ur.Password) == true {
-		token, err := CreateMetadataJWT(&u, DefaultLoginTokenValidity)
-		if err != nil {
-			writeError(err.Error(), w, http.StatusUnauthorized)
-		} else {
-			tokenRes := tokenResponse{JWT: token}
-			jtoken, err := json.Marshal(tokenRes)
-			if err != nil {
-				log.Warnln("Could not marshall JWT token:", err)
-			}
-			w.Header().Add("Content-Type", "application/json")
-			w.Write(jtoken)
-		}
-	} else {
+	if u.ValidPassword(ur.Password) == false {
 		writeError("Invalid username or password", w, http.StatusUnauthorized)
+		return
 	}
+
+	var token string
+
+	if ur.RememberMe {
+		token, err = CreateMetadataJWT(&u, RememberMeTokenValidity)
+	} else {
+		token, err = CreateMetadataJWT(&u, DefaultLoginTokenValidity)
+	}
+
+	if err != nil {
+		writeError(err.Error(), w, http.StatusUnauthorized)
+		return
+	}
+
+	tokenRes := tokenResponse{JWT: token}
+	jtoken, err := json.Marshal(tokenRes)
+	if err != nil {
+		log.Warnln("Could not marshall JWT token:", err)
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(jtoken)
 }
 
 // CreateUserHandler handles the creation of users, either via invite code or the first admin user.

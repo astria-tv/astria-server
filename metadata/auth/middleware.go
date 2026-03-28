@@ -105,7 +105,6 @@ func MiddleWare(h http.Handler) http.Handler {
 		}
 		log.Warnln("No authorization header presented.")
 		writeError("Unauthorized", w, http.StatusUnauthorized)
-		return
 	})
 }
 
