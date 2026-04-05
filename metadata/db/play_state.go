@@ -126,9 +126,17 @@ func SavePlayState(playState *PlayState) error {
 	var updatedPlayState PlayState
 	// Upsert the given PlayState. The WHERE clause uniquely identifies the
 	// PlayState due to the UNIQUE index on media_uuid/user_id.
+	// Use a map for Assign so that zero-value fields (Finished=false,
+	// Playtime=0) are persisted. GORM v1 silently ignores zero-value
+	// struct fields, which prevented clearing the "finished" flag.
 	return db.
 		Where(&PlayState{MediaUUID: playState.MediaUUID, UserID: playState.UserID}).
-		Assign(playState).
+		Assign(map[string]interface{}{
+			"finished":   playState.Finished,
+			"playtime":   playState.Playtime,
+			"media_uuid": playState.MediaUUID,
+			"user_id":    playState.UserID,
+		}).
 		FirstOrCreate(&updatedPlayState).
 		Error
 }
