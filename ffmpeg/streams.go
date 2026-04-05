@@ -43,6 +43,9 @@ type Stream struct {
 	Width  int
 	Height int
 
+	// Number of audio channels (only relevant for audio streams)
+	Channels int
+
 	// "audio", "video", "subtitle"
 	StreamType string
 	// Only relevant for audio and subtitles. Language code.
@@ -95,6 +98,11 @@ func GetStreams(fileLocator filesystem.FileLocator) (*Streams, error) {
 
 			bitrate, _ := strconv.Atoi(stream.BitRate)
 
+			channels := stream.Channels
+			if channels == 0 {
+				channels = 2
+			}
+
 			streams.AudioStreams = append(streams.AudioStreams,
 				Stream{
 					StreamKey: StreamKey{
@@ -106,6 +114,7 @@ func GetStreams(fileLocator filesystem.FileLocator) (*Streams, error) {
 					TotalDuration:    time.Duration(totalDurationSeconds * float64(time.Second)),
 					TotalDurationDts: totalDurationTs,
 					StreamType:       stream.CodecType,
+					Channels:         channels,
 					Language:         GetLanguageTag(stream),
 					Title:            GetTitleOrHumanizedLanguage(stream),
 					EnabledByDefault: stream.Disposition["default"] != 0,
@@ -218,7 +227,7 @@ func buildExternalSubtitleStreams(
 			continue
 		}
 
-		lang := "unk"
+		lang := "und"
 
 		// TODO(Leon Handreke): This is a case of aggressive programming, can this ever fail?
 		tag := match[1]

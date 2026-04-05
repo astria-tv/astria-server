@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/olaris/olaris-server/helpers"
+	"golang.org/x/text/language"
 )
 
 func reverseMap(m map[string]string) map[string]string {
@@ -22,20 +23,19 @@ func reverseMap(m map[string]string) map[string]string {
 
 // TODO(Leon Handreke): Get a proper list according to the standard
 var langTagToHumanized = map[string]string{
-	"eng": "English",
-	"ger": "German",
-	"jpn": "Japanese",
-	"ita": "Italian",
-	"fre": "French",
-	"spa": "Spanish",
-	"dut": "Dutch",
-	"por": "Portuguese",
-	"pol": "Polish",
-	"rus": "Russian",
-	"vie": "Vietnamese",
-	"hun": "Hungarian",
-	"unk": "Unknown",
+	"en":  "English",
+	"de":  "German",
+	"ja":  "Japanese",
+	"it":  "Italian",
+	"fr":  "French",
+	"es":  "Spanish",
 	"nl":  "Dutch",
+	"pt":  "Portuguese",
+	"pl":  "Polish",
+	"ru":  "Russian",
+	"vi":  "Vietnamese",
+	"hu":  "Hungarian",
+	"und": "Unknown",
 }
 
 var humanizedToLangTag = GetHumanizedToLangTag()
@@ -44,7 +44,7 @@ func GetHumanizedToLangTag() map[string]string {
 	humanizedToLangTag := reverseMap(langTagToHumanized)
 
 	// Some other tags that sometimes appear in external subtitle filenames
-	humanizedToLangTag["Polski"] = "pol"
+	humanizedToLangTag["Polski"] = "pl"
 	return humanizedToLangTag
 }
 
@@ -70,10 +70,14 @@ func GetTitleOrHumanizedLanguage(stream ProbeStream) string {
 
 func GetLanguageTag(stream ProbeStream) string {
 	lang := stream.Tags["language"]
-	if lang != "" {
+	if lang == "" {
+		return "und"
+	}
+	tag, err := language.Parse(lang)
+	if err != nil {
 		return lang
 	}
-	return "unk"
+	return tag.String()
 }
 
 func BuildConstantSegmentDurations(interval Interval, segmentDuration time.Duration, startSegmentIndex int) []Segment {

@@ -22,6 +22,17 @@ func (c RepresentationCombination) TotalBandwidth() int {
 	return c.VideoStream.Representation.BitRate + c.AudioBitRate
 }
 
+// VideoFrameRate returns the video frame rate formatted for HLS FRAME-RATE attribute.
+// Returns empty string if frame rate is not available.
+func (c RepresentationCombination) VideoFrameRate() string {
+	fr := c.VideoStream.Stream.FrameRate
+	if fr == nil || fr.Sign() == 0 {
+		return ""
+	}
+	f, _ := fr.Float64()
+	return fmt.Sprintf("%.3f", f)
+}
+
 type SubtitlePlaylistItem struct {
 	ffmpeg.StreamRepresentation
 	URI string
@@ -35,19 +46,16 @@ type AudioGroup struct {
 const transcodingMasterPlaylistTemplate = `#EXTM3U
 #EXT-X-VERSION:7
 #EXT-X-INDEPENDENT-SEGMENTS
-
-{{ range $agi, $ag := .audioGroups -}}
+{{ range $agi, $ag := .audioGroups }}
 {{ range $si, $s := $ag.Streams -}}
-#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$ag.Name}}",NAME="{{$s.Stream.Title}}",CHANNELS="2",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="{{$ag.Name}}",NAME="{{$s.Stream.Title}}"{{ if $s.Stream.Language }},LANGUAGE="{{$s.Stream.Language}}"{{ end }},CHANNELS="{{$s.Stream.Channels}}",URI="{{$s.Stream.StreamId}}/{{$s.Representation.RepresentationId}}/media.m3u8",AUTOSELECT=YES{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end -}}
-{{ end }}
-
+{{ end -}}
 {{ range $i, $s := .subtitlePlaylistItems -}}
 #EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="webvtt",NAME="{{$s.Stream.Title}}",LANGUAGE="{{$s.Stream.Language}}",AUTOSELECT={{ if $s.Stream.EnabledByDefault }}YES{{ else }}NO{{ end }},URI="{{$s.URI}}"{{ if $s.Stream.EnabledByDefault }},DEFAULT=YES{{ else }},DEFAULT=NO{{ end }}
 {{ end }}
-
 {{ range $ci, $c := .representationCombinations -}}
-#EXT-X-STREAM-INF:BANDWIDTH={{ $c.TotalBandwidth }},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}"{{ if $c.VideoStream.Representation.Width }},RESOLUTION={{$c.VideoStream.Representation.Width}}x{{$c.VideoStream.Representation.Height}}{{ end }},AUDIO="{{$c.AudioGroupName}}"{{ if $.subtitlePlaylistItems }},SUBTITLES="webvtt"{{ end }}
+#EXT-X-STREAM-INF:BANDWIDTH={{ $c.TotalBandwidth }},CODECS="{{$c.VideoStream.Representation.Codecs}},{{$c.AudioCodecs}}"{{ if $c.VideoStream.Representation.Width }},RESOLUTION={{$c.VideoStream.Representation.Width}}x{{$c.VideoStream.Representation.Height}}{{ end }}{{ if $c.VideoFrameRate }},FRAME-RATE={{$c.VideoFrameRate}}{{ end }},AUDIO="{{$c.AudioGroupName}}"{{ if $.subtitlePlaylistItems }},SUBTITLES="webvtt"{{ end }}
 {{$c.VideoStream.Stream.StreamId}}/{{$c.VideoStream.Representation.RepresentationId}}/media.m3u8
 {{ end }}
 `
