@@ -10,6 +10,31 @@ import (
 	"gitlab.com/olaris/olaris-server/metadata/auth"
 )
 
+// AddCORSHeaders is a middleware that adds permissive CORS headers to all
+// streaming responses. This is necessary for Chromecast and other cross-origin
+// playback scenarios where the cast receiver is on a different domain.
+func AddCORSHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Range, Content-Type, Accept-Ranges")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // For Apple devices to handle HLS properly, the m3u8 playlists must be sent with the correct Content-Type
 func AddM3U8Header(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +55,8 @@ func NewStreamingController() web.Controller {
 // RegisterRoutes registers the streaming handler's routes on the provided
 // router.
 func (sh *Controller) RegisterRoutes(router *mux.Router) {
+	router.Use(AddCORSHeaders)
+
 	router.Handle("/files/{fileLocator:.*}/{sessionID}/hls-transmuxing-manifest.m3u8", AddM3U8Header(http.HandlerFunc(serveHlsTransmuxingMasterPlaylist)))
 	router.Handle("/files/{fileLocator:.*}/{sessionID}/hls-transcoding-manifest.m3u8", AddM3U8Header(http.HandlerFunc(serveHlsTranscodingMasterPlaylist)))
 	router.HandleFunc("/files/{fileLocator:.*}/metadata.json", serveMetadata)
@@ -48,5 +75,4 @@ func (sh *Controller) RegisterRoutes(router *mux.Router) {
 
 	schema, handler := NewRelayHandler()
 	router.Handle("/query", auth.MiddleWare(graphqlws.NewHandlerFunc(schema, handler)))
-	//handler := cors.AllowAll().Handler(router)
 }
