@@ -21,21 +21,54 @@ func (r *Resolver) Watchlist(ctx context.Context) []*MovieOrSeriesResolver {
 	userID, _ := auth.UserID(ctx)
 	items, _ := db.GetWatchlistItems(userID)
 
+	// Partition UUIDs by media type
+	var movieUUIDs, seriesUUIDs []string
+	for _, item := range items {
+		switch item.MediaType {
+		case "movie":
+			movieUUIDs = append(movieUUIDs, item.MediaUUID)
+		case "series":
+			seriesUUIDs = append(seriesUUIDs, item.MediaUUID)
+		}
+	}
+
+	// Batch-load all movies and series in two queries
+	moviesMap := db.FindMoviesByUUIDs(movieUUIDs)
+	seriesMap := db.FindSeriesByUUIDs(seriesUUIDs)
+
+	// Batch-load play states for movies
+	allUUIDs := append(movieUUIDs, seriesUUIDs...)
+	playStates := db.FindPlayStatesByUUIDs(allUUIDs, userID)
+
+	// Batch-load unwatched episode counts for series
+	var seriesIDs []uint
+	for _, s := range seriesMap {
+		seriesIDs = append(seriesIDs, s.ID)
+	}
+	unwatchedCounts := db.BatchUnwatchedEpisodesInSeriesCounts(seriesIDs, userID)
+
+	// Assemble resolvers preserving watchlist order
+	onWL := true
 	var resolvers []*MovieOrSeriesResolver
 	for _, item := range items {
 		switch item.MediaType {
 		case "movie":
-			movie, err := db.FindMovieByUUID(item.MediaUUID)
-			if err != nil {
+			movie, ok := moviesMap[item.MediaUUID]
+			if !ok {
 				continue
 			}
-			resolvers = append(resolvers, &MovieOrSeriesResolver{r: &MovieResolver{r: *movie}})
+			resolvers = append(resolvers, &MovieOrSeriesResolver{
+				r: &MovieResolver{r: movie, playState: playStates[movie.UUID], onWatchlist: &onWL},
+			})
 		case "series":
-			series, err := db.FindSeriesByUUID(item.MediaUUID)
-			if err != nil {
+			series, ok := seriesMap[item.MediaUUID]
+			if !ok {
 				continue
 			}
-			resolvers = append(resolvers, &MovieOrSeriesResolver{r: &SeriesResolver{r: *series}})
+			count := int32(unwatchedCounts[series.ID])
+			resolvers = append(resolvers, &MovieOrSeriesResolver{
+				r: &SeriesResolver{r: series, unwatchedEpisodesCount: &count, onWatchlist: &onWL},
+			})
 		}
 	}
 	return resolvers

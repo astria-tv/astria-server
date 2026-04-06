@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/astria-tv/astria-server/filesystem"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"github.com/astria-tv/astria-server/filesystem"
 )
 
 // MovieFile is used to store fileinformation about a movie.
@@ -188,6 +188,20 @@ func FindAllMovies(qd *QueryDetails) (movies []Movie) {
 // FindMovieByUUID finds the movie specified by the given uuid.
 func FindMovieByUUID(uuid string) (*Movie, error) {
 	return findMovie("uuid = ?", uuid)
+}
+
+// FindMoviesByUUIDs batch-loads movies for the given UUIDs.
+func FindMoviesByUUIDs(uuids []string) map[string]Movie {
+	result := make(map[string]Movie)
+	if len(uuids) == 0 {
+		return result
+	}
+	var movies []Movie
+	db.Preload("MovieFiles.Streams").Where("uuid IN (?)", uuids).Find(&movies)
+	for _, m := range movies {
+		result[m.UUID] = m
+	}
+	return result
 }
 
 // FindMovieByTmdbID finds the movie specified by the given TMDB ID

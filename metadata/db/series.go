@@ -3,10 +3,10 @@ package db
 import (
 	"fmt"
 
+	"github.com/astria-tv/astria-server/filesystem"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"github.com/astria-tv/astria-server/filesystem"
 )
 
 // Series holds metadata information about series.
@@ -220,6 +220,20 @@ func SearchSeriesByTitle(name string) (series []Series) {
 // FindSeriesByUUID retrives a serie based on it's UUID.
 func FindSeriesByUUID(uuid string) (*Series, error) {
 	return findSeries("uuid = ?", uuid)
+}
+
+// FindSeriesByUUIDs batch-loads series for the given UUIDs.
+func FindSeriesByUUIDs(uuids []string) map[string]Series {
+	result := make(map[string]Series)
+	if len(uuids) == 0 {
+		return result
+	}
+	var series []Series
+	db.Preload("Seasons.Episodes.EpisodeFiles.Streams").Where("uuid IN (?)", uuids).Find(&series)
+	for _, s := range series {
+		result[s.UUID] = s
+	}
+	return result
 }
 
 // FindSeriesByTmdbID retrives a serie based on its TMDB ID
