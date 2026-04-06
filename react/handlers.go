@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
-
-	"github.com/rs/cors"
 )
 
 //go:embed build/*
@@ -45,10 +43,10 @@ func GetHandler() http.Handler {
 	}
 
 	fsys := http.FS(embeddedFS)
-	handler := cors.AllowAll().Handler(&spaHandler{
+	handler := &spaHandler{
 		fs:         fsys,
 		fileServer: http.FileServer(fsys),
-	})
+	}
 
 	return handler
 }

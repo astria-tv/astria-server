@@ -5,30 +5,31 @@ import (
 
 	"github.com/astria-tv/astria-server/interfaces/web"
 
+	"github.com/astria-tv/astria-server/metadata/auth"
 	"github.com/gorilla/mux"
 	"github.com/graph-gophers/graphql-transport-ws/graphqlws"
-	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
-// AddCORSHeaders is a middleware that adds permissive CORS headers to all
-// streaming responses. This is necessary for Chromecast and other cross-origin
-// playback scenarios where the cast receiver is on a different domain.
+// castReceiverOrigin is the only origin allowed to make cross-origin requests
+// to the streaming and image endpoints. This is the custom Chromecast receiver.
+const castReceiverOrigin = "https://cast.astria.tv"
+
+// AddCORSHeaders is a middleware that adds CORS headers for the Chromecast
+// receiver. Only the cast receiver origin is permitted; all other cross-origin
+// requests are denied by the browser.
 func AddCORSHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-		}
-		w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Range, Content-Type, Accept-Ranges")
-		w.Header().Set("Access-Control-Max-Age", "86400")
+		if origin == castReceiverOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", castReceiverOrigin)
+			w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
+			w.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Range, Content-Type, Accept-Ranges")
+			w.Header().Set("Access-Control-Max-Age", "86400")
 
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
 		}
 
 		next.ServeHTTP(w, r)

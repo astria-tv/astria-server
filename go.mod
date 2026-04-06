@@ -18,7 +18,6 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.1
 	github.com/pkg/errors v0.9.1
 	github.com/rclone/rclone v1.57.0
-	github.com/rs/cors v1.8.2
 	github.com/ryanbradynd05/go-tmdb v0.0.0-20201006144520-c0566c3d1506
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil/v3 v3.21.8
@@ -30,6 +29,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	gitlab.com/olaris/olaris-rename v0.0.0-20220629071935-c44ace6d9152
 	golang.org/x/sys v0.38.0
+	golang.org/x/text v0.31.0
 	gopkg.in/gormigrate.v1 v1.6.0
 )
 
@@ -138,7 +138,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/term v0.37.0 // indirect
-	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/api v0.63.0 // indirect

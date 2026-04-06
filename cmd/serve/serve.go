@@ -18,7 +18,6 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/grandcat/zeroconf"
-	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -121,27 +120,7 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			mainRouter.Path("/").Handler(http.RedirectHandler(appURL.Path, http.StatusMovedPermanently))
 			mainRouter.Path("/astria").Handler(http.RedirectHandler(appURL.Path, http.StatusMovedPermanently))
 
-			handler := cors.New(cors.Options{
-				AllowedOrigins: []string{"*"},
-				AllowedMethods: []string{
-					http.MethodHead,
-					http.MethodGet,
-					http.MethodPost,
-					http.MethodPut,
-					http.MethodPatch,
-					http.MethodDelete,
-					http.MethodOptions,
-				},
-				AllowedHeaders: []string{"*"},
-				ExposedHeaders: []string{
-					"Content-Length",
-					"Content-Range",
-					"Content-Type",
-					"Accept-Ranges",
-				},
-				MaxAge: 86400,
-			}).Handler(mainRouter)
-			handler = handlers.LoggingHandler(os.Stdout, handler)
+			handler := handlers.LoggingHandler(os.Stdout, mainRouter)
 
 			log.Infoln("binding on port", port)
 			srv := &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: handler}
