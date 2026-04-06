@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"syscall"
 	"time"
 
 	"gitlab.com/olaris/olaris-server/helpers"
@@ -31,7 +32,6 @@ import (
 	"gitlab.com/olaris/olaris-server/react"
 	"gitlab.com/olaris/olaris-server/streaming"
 )
-
 
 func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 	c := &cobra.Command{
@@ -67,10 +67,7 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			}
 
 			mainRouter := mux.NewRouter()
-
-			r := mainRouter.PathPrefix("/olaris")
-			rr := mainRouter.PathPrefix("/olaris")
-			rrr := mainRouter.PathPrefix("/olaris")
+			astriaRouter := mainRouter.PathPrefix("/astria").Subrouter()
 
 			dbOptions := db.DatabaseOptions{
 				Connection: viper.GetString("database.connection"),
@@ -78,9 +75,6 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			}
 
 			mctx := app.NewMDContext(dbOptions, agents.NewTmdbAgent())
-			if viper.GetBool("server.verbose") {
-				log.SetLevel(log.DebugLevel)
-			}
 			viper.WatchConfig()
 
 			updateConfig := func(in fsnotify.Event) {
@@ -94,10 +88,10 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			}
 			viper.OnConfigChange(updateConfig)
 
-			metaRouter := r.PathPrefix("/m").Subrouter()
+			metaRouter := astriaRouter.PathPrefix("/m").Subrouter()
 			metadata.RegisterRoutes(mctx, metaRouter)
 
-			streamingRouter := rr.PathPrefix("/s").Subrouter()
+			streamingRouter := astriaRouter.PathPrefix("/s").Subrouter()
 			streamingController.RegisterRoutes(streamingRouter)
 
 			// This is just to make sure that no temp files stay behind in case the
@@ -119,13 +113,13 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 				defer zeroconfService.Shutdown()
 			}
 
-			appRoute := rrr.PathPrefix("/app").
-				Handler(http.StripPrefix("/olaris/app", react.GetHandler())).
+			appRouter := astriaRouter.PathPrefix("/app").
+				Handler(http.StripPrefix("/astria/app", react.GetHandler())).
 				Name("app")
 
-			appURL, _ := appRoute.URL()
+			appURL, _ := appRouter.URL()
 			mainRouter.Path("/").Handler(http.RedirectHandler(appURL.Path, http.StatusMovedPermanently))
-			mainRouter.Path("/olaris").Handler(http.RedirectHandler(appURL.Path, http.StatusMovedPermanently))
+			mainRouter.Path("/astria").Handler(http.RedirectHandler(appURL.Path, http.StatusMovedPermanently))
 
 			handler := cors.New(cors.Options{
 				AllowedOrigins: []string{"*"},
@@ -158,7 +152,7 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			}()
 
 			stopChan := make(chan os.Signal, 2)
-			signal.Notify(stopChan, os.Interrupt, os.Kill)
+			signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 
 			// Wait for termination signal
 			<-stopChan
