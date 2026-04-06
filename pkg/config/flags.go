@@ -6,7 +6,7 @@ import (
 
 // hack to get rid of the unwanted extra pflags from rclone/fs/log
 // not really a hack anymore but this should be in the container
-var flagSet = pflag.NewFlagSet("olaris", pflag.ExitOnError)
+var flagSet = pflag.NewFlagSet("astria", pflag.ExitOnError)
 
 func init() {
 	pflag.CommandLine = flagSet

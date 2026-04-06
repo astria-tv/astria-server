@@ -2,8 +2,8 @@ package agents_test
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/db"
 	"testing"
 )
 

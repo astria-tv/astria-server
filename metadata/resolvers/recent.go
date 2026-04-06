@@ -4,8 +4,8 @@ import (
 	"context"
 	"sort"
 
-	"gitlab.com/olaris/olaris-server/metadata/auth"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 type sortable interface {

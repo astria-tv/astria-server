@@ -1,6 +1,6 @@
 package resolvers
 
-import "gitlab.com/olaris/olaris-server/metadata/db"
+import "github.com/astria-tv/astria-server/metadata/db"
 
 func buildDatabaseQueryDetails(offset *int32, limit *int32) db.QueryDetails {
 	qd := db.QueryDetails{}

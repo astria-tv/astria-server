@@ -8,7 +8,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 const DefaultLoginTokenValidity = 24 * time.Hour

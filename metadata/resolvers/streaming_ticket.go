@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"path"
 
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // CreateSTResponse  holds new jwt data.

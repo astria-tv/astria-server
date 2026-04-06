@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"gitlab.com/olaris/olaris-server/dash"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/dash"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 func serveDASHManifest(w http.ResponseWriter, r *http.Request) {

@@ -3,9 +3,9 @@ package resolvers
 import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/metadata/managers"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/managers"
 	"net/http"
 )
 

@@ -1,17 +1,18 @@
 package helpers
 
 import (
-	log "github.com/sirupsen/logrus"
-	"github.com/snowzach/rotatefilehook"
 	"os"
 	"path"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/snowzach/rotatefilehook"
 )
 
 // InitLoggers sets the default logger options
 func InitLoggers(level log.Level) {
 	rotateFileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
-		Filename:   path.Join(LogDir(), "olaris-server.log"),
+		Filename:   path.Join(LogDir(), "astria-server.log"),
 		MaxSize:    2,  // megabytes
 		MaxBackups: 7,  // amount
 		MaxAge:     28, //days

@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"context"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // NearbyEpisodesQueryArgs contains the arguments that can be passed into the

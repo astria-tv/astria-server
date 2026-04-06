@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/helpers/levenshtein"
+	"github.com/astria-tv/astria-server/metadata/db"
 	errors "github.com/pkg/errors"
 	"github.com/ryanbradynd05/go-tmdb"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-rename/identify"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/helpers/levenshtein"
-	"gitlab.com/olaris/olaris-server/metadata/db"
 )
 
-const xattrNameMovieTMDBID = "user.olaris.v1.movies.tmdb.id"
+const xattrNameMovieTMDBID = "user.astria.v1.movies.tmdb.id"
 
 // RefreshAllMovieMetadata refreshes all metadata for all movies
 func (m *MetadataManager) RefreshAllMovieMetadata() {

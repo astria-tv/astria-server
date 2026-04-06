@@ -7,9 +7,9 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/hls"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/hls"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // maxAudioBitRate returns the highest bitrate among a set of audio representations.
@@ -64,7 +64,7 @@ func serveHlsMasterPlaylist(w http.ResponseWriter, r *http.Request) {
 
 	// TODO(Leon Handreke): I've observed issues with switching from transmuxed representations to transcoded
 	// (garbled output). Therefore, serve alternative streams only for transcoded for now. See
-	// https://gitlab.com/olaris/olaris-server/issues/48
+	// https://github.com/astria-tv/astria-server/issues/48
 	if fullQualityRepresentation.Representation.Transcoded {
 		// Build lower-quality transcoded versions
 		for _, preset := range []string{"preset:480-1000k-video", "preset:720-3000k-video", "preset:1080-6000k-video"} {

@@ -3,7 +3,7 @@ package db_test
 import (
 	"testing"
 
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 var movie db.Movie

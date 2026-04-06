@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 	"io/ioutil"
 	"math/big"
 	"os"

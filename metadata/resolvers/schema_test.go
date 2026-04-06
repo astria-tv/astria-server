@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"gitlab.com/olaris/olaris-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/app"
 	"testing"
 )
 

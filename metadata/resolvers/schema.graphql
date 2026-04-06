@@ -199,7 +199,7 @@ type Library {
     # Path that this library manages
     filePath: String!
 
-    # Whether olaris-server is currently scanning the library
+    # Whether astria-server is currently scanning the library
     isRefreshing: Boolean!
 
     # Backend for the library (0 - Local filesystem, 1 - Rclone)

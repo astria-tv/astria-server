@@ -5,7 +5,7 @@
 #directFileAccess = false
 
 [database]
-#connection = "postgres://host=localhost sslmode=disable dbname=olaris"
+#connection = "postgres://host=localhost sslmode=disable dbname=astria"
 
 [debug]
 #streamingPages = false

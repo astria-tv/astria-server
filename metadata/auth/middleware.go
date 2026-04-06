@@ -11,8 +11,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 type contextKey string

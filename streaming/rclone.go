@@ -3,7 +3,7 @@ package streaming
 import (
 	"fmt"
 	"github.com/rclone/rclone/vfs"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 	"net/http"
 	"path"
 	"time"

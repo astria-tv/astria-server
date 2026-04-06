@@ -6,8 +6,8 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // removeFileFromMapWithMutex cuts down on boilerplate by locking the

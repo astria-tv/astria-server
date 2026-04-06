@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	mhelpers "gitlab.com/olaris/olaris-server/metadata/helpers"
+	"github.com/astria-tv/astria-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/db"
+	mhelpers "github.com/astria-tv/astria-server/metadata/helpers"
 )
 
 // MetadataManager manages the metadata repository that is referenced by the files in the various

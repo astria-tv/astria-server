@@ -4,9 +4,9 @@ import (
 	"context"
 	"strconv"
 
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 type mustUUIDArgs struct {

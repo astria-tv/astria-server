@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	"gitlab.com/olaris/olaris-server/cmd/dumpdebug"
-	"gitlab.com/olaris/olaris-server/cmd/identify"
-	"gitlab.com/olaris/olaris-server/cmd/identify_movie"
-	"gitlab.com/olaris/olaris-server/cmd/library"
-	"gitlab.com/olaris/olaris-server/cmd/library_create"
-	"gitlab.com/olaris/olaris-server/cmd/root"
-	"gitlab.com/olaris/olaris-server/cmd/serve"
-	"gitlab.com/olaris/olaris-server/cmd/user"
-	"gitlab.com/olaris/olaris-server/cmd/user_create"
-	"gitlab.com/olaris/olaris-server/cmd/version"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
-	"gitlab.com/olaris/olaris-server/streaming"
+	"github.com/astria-tv/astria-server/cmd/dumpdebug"
+	"github.com/astria-tv/astria-server/cmd/identify"
+	"github.com/astria-tv/astria-server/cmd/identify_movie"
+	"github.com/astria-tv/astria-server/cmd/library"
+	"github.com/astria-tv/astria-server/cmd/library_create"
+	"github.com/astria-tv/astria-server/cmd/root"
+	"github.com/astria-tv/astria-server/cmd/serve"
+	"github.com/astria-tv/astria-server/cmd/user"
+	"github.com/astria-tv/astria-server/cmd/user_create"
+	"github.com/astria-tv/astria-server/cmd/version"
+	"github.com/astria-tv/astria-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/streaming"
 )
 
 func New() *cmd.CobraCommand {

@@ -3,8 +3,8 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // MediaItemResolver is a resolver around mediaFile types.

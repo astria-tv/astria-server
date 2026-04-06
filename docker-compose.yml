@@ -1,7 +1,7 @@
 # Please modify the file before using it
 version: '3'
 services:
-  olaris:
+  astria:
     restart: always
     build: .
     ports:

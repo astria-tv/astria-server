@@ -1,8 +1,8 @@
 [Unit]
-Description=Olaris Media Server
+Description=Astria Media Server
 
 [Service]
-ExecStart=/opt/olaris/bin/olaris
+ExecStart=/opt/astria/bin/astria
 Restart=on-failure
 
 [Install]

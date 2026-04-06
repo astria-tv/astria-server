@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/auth"
 	"os"
 )
 

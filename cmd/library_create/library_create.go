@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 const defaultTimeOffset = -24 * time.Hour

@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 func NewIdentifyCommand() *cmd.CobraCommand {

@@ -5,12 +5,12 @@ package metadata
 import (
 	"github.com/gorilla/mux"
 	"github.com/graph-gophers/graphql-transport-ws/graphqlws"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/resolvers"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/resolvers"
 	"net/http"
 
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // RegisterRoutes defines the handlers for metadata endpoints such as graphql and REST methods.

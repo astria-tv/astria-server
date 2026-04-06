@@ -11,13 +11,13 @@ import (
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 )
 
 const TotalDurationInvalid = float64(-1)
 
 // WARNING: These structs are cached in the database, so adding fields or changing types
-// will cause mayhem. See https://gitlab.com/olaris/olaris-server/issues/55
+// will cause mayhem. See https://github.com/astria-tv/astria-server/issues/55
 
 type StreamKey struct {
 	FileLocator filesystem.FileLocator

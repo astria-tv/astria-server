@@ -3,7 +3,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // CreateNoAuthorisationError returns a standard error for unauthorised requests.

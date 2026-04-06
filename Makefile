@@ -11,9 +11,9 @@ GOGET=go get
 GOGENERATE=$(GOCMD) generate
 BIN_LOC=build
 DIST_DIR=dist
-BINARY_NAME=olaris
+BINARY_NAME=astria
 CMD_SERVER_PATH=main.go
-SRC_PATH=gitlab.com/olaris/olaris-server
+SRC_PATH=github.com/astria-tv/astria-server
 REACT_BUILD_DIR=./app/build
 IDENTIFIER=$(BINARY_NAME)-$(GOOS)-$(GOARCH)
 RELEASE_IDENTIFIER=$(shell git describe --tags)
@@ -39,26 +39,26 @@ build-local: generate
 	$(GOBUILD) -o $(BIN_LOC)/$(BINARY_NAME) $(LDFLAGS) -v $(CMD_SERVER_PATH)
 
 docker-build:
-	docker build -t olaristv/olaris-server:latest .
+	docker build -t astria-tv/astria-server:latest .
 
 docker-tag:
-	docker tag olaristv/olaris-server:latest olaristv/olaris-server:$(RELEASE_IDENTIFIER)
+	docker tag astria-tv/astria-server:latest astria-tv/astria-server:$(RELEASE_IDENTIFIER)
 
 docker-push:
-	docker push olaristv/olaris-server:latest
-	docker push olaristv/olaris-server:$(RELEASE_IDENTIFIER)
+	docker push astria-tv/astria-server:latest
+	docker push astria-tv/astria-server:$(RELEASE_IDENTIFIER)
 
 docker-dev-build:
-	docker build -f Dockerfile.dev . -t olaristv/olaris-server:dev
+	docker build -f Dockerfile.dev . -t astria-tv/astria-server:dev
 
 docker-from-ci-build:
-	docker build -f Dockerfile.from-ci . -t olaristv/olaris-server:from-ci
+	docker build -f Dockerfile.from-ci . -t astria-tv/astria-server:from-ci
 
 docker-from-ci-build-tag-push:
-	docker build -f Dockerfile.from-ci . -t olaristv/olaris-server:from-ci
-	docker tag olaristv/olaris-server:from-ci olaristv/olaris-server:from-ci-$(RELEASE_IDENTIFIER)
-	docker push olaristv/olaris-server:from-ci
-	docker push olaristv/olaris-server:from-ci-$(RELEASE_IDENTIFIER)
+	docker build -f Dockerfile.from-ci . -t astria-tv/astria-server:from-ci
+	docker tag astria-tv/astria-server:from-ci astria-tv/astria-server:from-ci-$(RELEASE_IDENTIFIER)
+	docker push astria-tv/astria-server:from-ci
+	docker push astria-tv/astria-server:from-ci-$(RELEASE_IDENTIFIER)
 
 .PHONY: crossbuild
 crossbuild:
@@ -70,7 +70,7 @@ dist: build
 	mkdir -p builds/dist
 	cp -r doc/ builds/dist
 	mkdir -p builds/dist/bin
-	cp $(BIN_LOC)/$(IDENTIFIER) builds/dist/bin/olaris
+	cp $(BIN_LOC)/$(IDENTIFIER) builds/dist/bin/astria
 	mkdir -p $(DIST_DIR)
 	rm -f $(DIST_DIR)/$(IDENTIFIER)-$(RELEASE_IDENTIFIER).zip
 	# cd, otherwise zip will preserve the directory structure

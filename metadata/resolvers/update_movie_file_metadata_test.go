@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/olaris/olaris-server/metadata/agents/agentsfakes"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/agents/agentsfakes"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/db"
 	"testing"
 )
 

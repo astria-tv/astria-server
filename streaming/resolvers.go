@@ -9,8 +9,8 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 type StreamingResolver struct {

@@ -1,8 +1,8 @@
 package managers
 
 import (
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // FfmpegStreamFromDatabaseStream creates a ffmpeg stream object based on a database object

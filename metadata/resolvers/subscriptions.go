@@ -6,8 +6,8 @@ import (
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/managers/metadata"
 )
 
 type eventFilterFn = func(e *metadata.MetadataEvent) bool

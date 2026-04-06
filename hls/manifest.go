@@ -6,7 +6,7 @@ import (
 	"math"
 	"text/template"
 
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 )
 
 type RepresentationCombination struct {

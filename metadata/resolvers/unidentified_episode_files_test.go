@@ -2,8 +2,8 @@ package resolvers
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
 	"testing"
 )
 

@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/ryanbradynd05/go-tmdb"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 const tmdbAPIKey = "0cdacd9ab172ac6ff69c8d84b2c938a8"

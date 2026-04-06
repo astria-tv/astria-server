@@ -3,11 +3,11 @@ package streaming
 import (
 	"net/http"
 
-	"gitlab.com/olaris/olaris-server/interfaces/web"
+	"github.com/astria-tv/astria-server/interfaces/web"
 
 	"github.com/gorilla/mux"
 	"github.com/graph-gophers/graphql-transport-ws/graphqlws"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // AddCORSHeaders is a middleware that adds permissive CORS headers to all

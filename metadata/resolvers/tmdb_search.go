@@ -3,7 +3,7 @@ package resolvers
 import (
 	"context"
 	"github.com/ryanbradynd05/go-tmdb"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/agents"
 )
 
 type tmdbSearchMoviesArgs struct {

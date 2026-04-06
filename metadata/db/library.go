@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/helpers"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/helpers"
 	"path"
 	"time"
 )

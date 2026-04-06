@@ -9,7 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/helpers"
+	"github.com/astria-tv/astria-server/helpers"
 	"golang.org/x/text/language"
 )
 

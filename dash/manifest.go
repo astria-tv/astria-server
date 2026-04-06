@@ -7,7 +7,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 )
 
 const dashManifestTemplate = `<?xml version="1.0" encoding="utf-8"?>

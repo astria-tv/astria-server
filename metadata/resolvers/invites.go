@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"context"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // InviteResolver is a resolver for the invite model.

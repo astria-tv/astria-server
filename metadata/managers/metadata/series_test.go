@@ -3,8 +3,8 @@ package metadata
 import (
 	"github.com/ryanbradynd05/go-tmdb"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/olaris/olaris-server/metadata/agents/agentsfakes"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/agents/agentsfakes"
+	"github.com/astria-tv/astria-server/metadata/db"
 	"testing"
 )
 

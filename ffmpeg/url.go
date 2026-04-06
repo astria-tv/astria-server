@@ -5,8 +5,8 @@ import (
 	"net/url"
 
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // NOTE(Leon Handreke): This doesn't really belong here. It doesn't really belong anywhere since it

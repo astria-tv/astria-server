@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/cmd"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/pkg/config"
+	"github.com/astria-tv/astria-server/cmd"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/pkg/config"
 )
 
 func main() {

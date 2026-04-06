@@ -7,14 +7,14 @@ import (
 	"path"
 	"time"
 
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/managers/metadata"
 	"github.com/fsnotify/fsnotify"
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
 )
 
 // MetadataContext is a container for all important vars.
@@ -73,7 +73,7 @@ func NewMDContext(
 
 	helpers.InitLoggers(log.InfoLevel)
 
-	log.Printf("olaris metadata server - version \"%s\"", helpers.Version)
+	log.Printf("astria metadata server - version \"%s\"", helpers.Version)
 
 	database := db.NewDb(databaseOptions)
 	database.SetLogger(&GormLogger{})

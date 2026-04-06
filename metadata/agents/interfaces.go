@@ -4,7 +4,7 @@ package agents
 
 import (
 	"github.com/ryanbradynd05/go-tmdb"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // MetadataRetrievalAgent can retrieve metadata for media items.

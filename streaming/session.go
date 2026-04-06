@@ -8,7 +8,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 )
 
 const playbackSessionTimeout = 20 * time.Minute

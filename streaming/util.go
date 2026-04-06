@@ -9,9 +9,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 // getNode parses the file that the client is trying to access from a string.

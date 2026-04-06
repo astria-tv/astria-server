@@ -20,8 +20,8 @@ RUN apt-get -y update && \
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-COPY . /go/src/gitlab.com/olaris/olaris-server
-WORKDIR /go/src/gitlab.com/olaris/olaris-server
+COPY . /go/src/github.com/astria-tv/astria-server
+WORKDIR /go/src/github.com/astria-tv/astria-server
 COPY --from=frontend /app/dist/ ./react/build/
 
 RUN make generate build-local
@@ -35,7 +35,7 @@ RUN apt-get -y update && \
     apt-get install -y --no-install-recommends ca-certificates ffmpeg sudo && \
     apt-get autoremove && apt-get clean
 
-COPY --from=build /go/src/gitlab.com/olaris/olaris-server/build/olaris /opt/olaris/olaris
+COPY --from=build /go/src/github.com/astria-tv/astria-server/build/astria /opt/astria/astria
 COPY ./docker/entrypoint.sh /
 
 # Create a non-root user and group
@@ -47,4 +47,4 @@ RUN mkdir -p /home/astria/.config/astria && chown astria:astria /home/astria/.co
 WORKDIR /home/astria
 VOLUME /home/astria/.config/astria
 EXPOSE 8080
-ENTRYPOINT ["/entrypoint.sh", "/opt/olaris/olaris"]
+ENTRYPOINT ["/entrypoint.sh", "/opt/astria/astria"]

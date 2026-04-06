@@ -4,7 +4,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 	"html/template"
 	"net/http"
 )

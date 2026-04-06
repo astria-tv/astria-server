@@ -71,7 +71,7 @@ func (s *TranscodingSession) Start() error {
 	s.ProcessWaitGroup.Add(1)
 
 	// Tells it to create a separate process group for FFmpeg that can be
-	// terminated separately from Olaris' process group
+	// terminated separately from Astria's process group
 	s.cmd.SysProcAttr = &syscall.SysProcAttr{}
 	s.cmd.SysProcAttr.Setpgid = true
 

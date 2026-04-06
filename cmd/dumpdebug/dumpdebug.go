@@ -13,8 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 func NewDumpDebugCommand() *cmd.CobraCommand {
@@ -23,7 +23,7 @@ func NewDumpDebugCommand() *cmd.CobraCommand {
 		Short: "Dump all data for debugging purposes",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			filename := fmt.Sprintf("olaris-dumpdebug-%s.zip",
+			filename := fmt.Sprintf("astria-dumpdebug-%s.zip",
 				time.Now().Format("2006-01-02-15-04-05"))
 			f, err := os.Create(filename)
 			if err != nil {

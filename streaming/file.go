@@ -1,7 +1,7 @@
 package streaming
 
 import (
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 	"net/http"
 	"path"
 )

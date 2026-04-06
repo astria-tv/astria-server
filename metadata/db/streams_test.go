@@ -3,8 +3,8 @@ package db_test
 import (
 	"testing"
 
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 func TestBeforeCreate(t *testing.T) {

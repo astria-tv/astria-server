@@ -1,4 +1,4 @@
-// Package react is a handler for the olaris-react application.
+// Package react is a handler for the astria-react application.
 package react
 
 import (
@@ -36,7 +36,7 @@ func (h *spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.fileServer.ServeHTTP(w, r)
 }
 
-// GetHandler implements a handler that serves up the compiled olaris-react code.
+// GetHandler implements a handler that serves up the compiled astria-react code.
 func GetHandler() http.Handler {
 	embeddedFS, err := fs.Sub(embedded, "build")
 

@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-rename/identify"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 // UpdateEpisodeFileMetadataInput is a request
@@ -99,7 +99,7 @@ func (r *Resolver) UpdateEpisodeFileMetadata(
 		}(v)
 	}
 	// TODO(Leon Handreke): Have at least a spinner, better proper progress reporting.
-	//  See https://gitlab.com/olaris/olaris-react/issues/33
+	//  See https://github.com/astria-tv/astria-react/issues/33
 	// updateEpisodeFileMetadataGroup.Wait()
 
 	return &UpdateEpisodeFileMetadataPayloadResolver{}

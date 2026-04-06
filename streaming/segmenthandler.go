@@ -11,7 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 )
 
 var videoMIMEType = "video/mp4"

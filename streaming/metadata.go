@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.com/olaris/olaris-server/ffmpeg"
+	"github.com/astria-tv/astria-server/ffmpeg"
 )
 
 type metadataResponse struct {

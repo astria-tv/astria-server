@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
-	"gitlab.com/olaris/olaris-server/metadata/auth"
+	"github.com/astria-tv/astria-server/metadata/auth"
 )
 
 const userIDContextKey = "auth context key userID"

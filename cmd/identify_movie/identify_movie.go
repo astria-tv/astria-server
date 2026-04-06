@@ -6,12 +6,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/metadata/managers/metadata"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/managers/metadata"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 func NewIdentifyMovieCommand() *cmd.CobraCommand {

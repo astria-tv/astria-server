@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 )
 
 type folderArgs struct {

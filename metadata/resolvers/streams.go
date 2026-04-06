@@ -2,7 +2,7 @@ package resolvers
 
 import (
 	"fmt"
-	"gitlab.com/olaris/olaris-server/metadata/db"
+	"github.com/astria-tv/astria-server/metadata/db"
 )
 
 var updateStreamLock = false

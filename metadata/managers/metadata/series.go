@@ -5,13 +5,13 @@ import (
 	"math"
 	"sync"
 
+	"github.com/astria-tv/astria-server/filesystem"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/helpers/levenshtein"
+	"github.com/astria-tv/astria-server/metadata/db"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/olaris/olaris-rename/identify"
-	"gitlab.com/olaris/olaris-server/filesystem"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/helpers/levenshtein"
-	"gitlab.com/olaris/olaris-server/metadata/db"
 )
 
 type TmdbEpisodeKey struct {
@@ -20,9 +20,9 @@ type TmdbEpisodeKey struct {
 	EpisodeNumber int
 }
 
-const xattrNameTVSeriesTMDBID = "user.olaris.v1.tv.tmdb.series.id"
-const xattrNameTVSeasonNumber = "user.olaris.v1.tv.tmdb.season.number"
-const xattrNameTVEpisodeNumber = "user.olaris.v1.tv.tmdb.episode.number"
+const xattrNameTVSeriesTMDBID = "user.astria.v1.tv.tmdb.series.id"
+const xattrNameTVSeasonNumber = "user.astria.v1.tv.tmdb.season.number"
+const xattrNameTVEpisodeNumber = "user.astria.v1.tv.tmdb.episode.number"
 
 func (m *MetadataManager) getEpisodeLock(episodeID uint) *sync.RWMutex {
 	v, _ := m.episodeLock.LoadOrStore(episodeID, &sync.RWMutex{})

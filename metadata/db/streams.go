@@ -3,7 +3,7 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 	"math/big"
 	"time"
 )

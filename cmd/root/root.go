@@ -3,12 +3,12 @@ package root
 import (
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 func NewRootCommand() *cmd.CobraCommand {
 	c := &cobra.Command{
-		Use: "olaris",
+		Use: "astria",
 	}
 
 	return &cmd.CobraCommand{Command: c}

@@ -10,10 +10,10 @@ import (
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/metadata/db/dialects/mysql"
-	"gitlab.com/olaris/olaris-server/metadata/db/dialects/postgres"
-	"gitlab.com/olaris/olaris-server/metadata/db/dialects/sqlite"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/metadata/db/dialects/mysql"
+	"github.com/astria-tv/astria-server/metadata/db/dialects/postgres"
+	"github.com/astria-tv/astria-server/metadata/db/dialects/sqlite"
 	"gopkg.in/gormigrate.v1"
 )
 

@@ -1,4 +1,4 @@
-module gitlab.com/olaris/olaris-server
+module github.com/astria-tv/astria-server
 
 go 1.24.0
 

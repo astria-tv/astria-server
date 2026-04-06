@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/pkg/cmd"
 )
 
 func NewUserCommand() *cmd.CobraCommand {

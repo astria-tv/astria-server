@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-	"gitlab.com/olaris/olaris-server/filesystem"
+	"github.com/astria-tv/astria-server/filesystem"
 )
 
 // Series holds metadata information about series.

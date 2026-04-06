@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/helpers"
+	"github.com/astria-tv/astria-server/helpers"
 )
 
 var ConfigDir string

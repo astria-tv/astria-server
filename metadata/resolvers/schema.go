@@ -4,7 +4,7 @@ package resolvers
 
 import (
 	"github.com/graph-gophers/graphql-go"
-	"gitlab.com/olaris/olaris-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/app"
 )
 
 // InitSchema inits the graphql schema.

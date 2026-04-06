@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"gitlab.com/olaris/olaris-server/helpers"
-	"gitlab.com/olaris/olaris-server/interfaces/web"
+	"github.com/astria-tv/astria-server/helpers"
+	"github.com/astria-tv/astria-server/interfaces/web"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/handlers"
@@ -23,20 +23,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"gitlab.com/olaris/olaris-server/ffmpeg"
-	"gitlab.com/olaris/olaris-server/metadata"
-	"gitlab.com/olaris/olaris-server/metadata/agents"
-	"gitlab.com/olaris/olaris-server/metadata/app"
-	"gitlab.com/olaris/olaris-server/metadata/db"
-	"gitlab.com/olaris/olaris-server/pkg/cmd"
-	"gitlab.com/olaris/olaris-server/react"
-	"gitlab.com/olaris/olaris-server/streaming"
+	"github.com/astria-tv/astria-server/ffmpeg"
+	"github.com/astria-tv/astria-server/metadata"
+	"github.com/astria-tv/astria-server/metadata/agents"
+	"github.com/astria-tv/astria-server/metadata/app"
+	"github.com/astria-tv/astria-server/metadata/db"
+	"github.com/astria-tv/astria-server/pkg/cmd"
+	"github.com/astria-tv/astria-server/react"
+	"github.com/astria-tv/astria-server/streaming"
 )
 
 func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 	c := &cobra.Command{
 		Use:   "serve",
-		Short: "Start the olaris server",
+		Short: "Start the astria server",
 		Run: func(cmd *cobra.Command, args []string) {
 			if viper.GetBool("server.verbose") {
 				log.SetLevel(log.DebugLevel)
@@ -104,7 +104,7 @@ func NewServeCommand(streamingController web.Controller) *cmd.CobraCommand {
 			if viper.GetBool("server.zeroconf.enabled") {
 				viper.SetDefault("server.zeroconf.domain", "local.")
 				domain := viper.GetString("server.zeroconf.domain")
-				zeroconfService, err := zeroconf.Register("olaris", "_http._tcp", domain, port, []string{"txtv=0", "lo=1", "la=2"}, nil)
+				zeroconfService, err := zeroconf.Register("astria", "_http._tcp", domain, port, []string{"txtv=0", "lo=1", "la=2"}, nil)
 				if err != nil {
 					log.WithError(err).Warn("zeroconf setup failed")
 				} else {
