@@ -28,7 +28,7 @@ func (r *PersonResolver) ProfilePath() string {
 	if r.r.ProfilePath == "" {
 		return ""
 	}
-	return fmt.Sprintf("/olaris/m/images/tmdb/w185%s", r.r.ProfilePath)
+	return fmt.Sprintf("/astria/m/images/tmdb/w185%s", r.r.ProfilePath)
 }
 
 // Biography returns the person's biography.

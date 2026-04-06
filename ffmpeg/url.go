@@ -16,7 +16,7 @@ func buildFfmpegUrlFromFileLocator(fileLocator filesystem.FileLocator) string {
 	switch fileLocator.Backend {
 	case filesystem.BackendRclone:
 		jwt, _ := auth.CreateStreamingJWT(0, fileLocator.String())
-		return fmt.Sprintf("http://127.0.0.1:%d/olaris/s/files/jwt/%s",
+		return fmt.Sprintf("http://127.0.0.1:%d/astria/s/files/jwt/%s",
 			viper.GetInt("server.port"), url.PathEscape(jwt))
 	case filesystem.BackendLocal:
 		return "file://" + fileLocator.Path

@@ -124,7 +124,7 @@ func (r *MovieResolver) PosterURL(ctx context.Context, args *posterURLArgs) stri
 			}
 		}
 	}
-	return fmt.Sprintf("/olaris/m/images/tmdb/%s%s", actualWidth, r.r.PosterPath)
+	return fmt.Sprintf("/astria/m/images/tmdb/%s%s", actualWidth, r.r.PosterPath)
 }
 
 // Year returns year

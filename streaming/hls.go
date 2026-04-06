@@ -241,7 +241,7 @@ func buildSubtitlePlaylistItems(representations []ffmpeg.StreamRepresentation, s
 		subtitlePlaylistItems = append(subtitlePlaylistItems,
 			hls.SubtitlePlaylistItem{
 				StreamRepresentation: s,
-				URI: fmt.Sprintf("/olaris/s/files/jwt/%s/%s/%d/%s/media.m3u8",
+				URI: fmt.Sprintf("/astria/s/files/jwt/%s/%s/%d/%s/media.m3u8",
 					jwt,
 					sessionID,
 					s.Stream.StreamId,

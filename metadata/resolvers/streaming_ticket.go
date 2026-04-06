@@ -3,10 +3,11 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"path"
+
 	"gitlab.com/olaris/olaris-server/helpers"
 	"gitlab.com/olaris/olaris-server/metadata/auth"
 	"gitlab.com/olaris/olaris-server/metadata/db"
-	"path"
 )
 
 // CreateSTResponse  holds new jwt data.
@@ -74,7 +75,7 @@ func (r *Resolver) CreateStreamingTicket(ctx context.Context, args *struct{ UUID
 	}
 
 	// TODO(Maran) It would be better to somehow pass routing information along and not hard-code this in place.
-	basePath := fmt.Sprintf("/olaris/s/files/jwt/%s/", token)
+	basePath := fmt.Sprintf("/astria/s/files/jwt/%s/", token)
 
 	metadataPath := path.Join(basePath, "metadata.json")
 

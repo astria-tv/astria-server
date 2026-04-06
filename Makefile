@@ -26,10 +26,9 @@ ready-ci: build-web generate
 
 .PHONY: build-web
 build-web:
-	git submodule update --init --recursive
-	cd react/astria-web && npm install && npm run build
+	cd react/astria-web/app && npm install && npm run build
 	rm -rf react/build
-	cp -r react/astria-web/dist react/build
+	cp -r react/astria-web/app/dist react/build
 
 .PHONY: build
 build: generate

@@ -79,7 +79,7 @@ func serveDASHManifest(w http.ResponseWriter, r *http.Request) {
 		subtitleStreams = append(subtitleStreams, dash.SubtitleStreamRepresentation{
 			StreamRepresentation: s,
 			// TODO(Maran) It would be better to somehow pass routing information along and not hard-code this in place.
-			URI: fmt.Sprintf("/olaris/s/files/jwt/%s/%s/%d/%s/0.vtt",
+			URI: fmt.Sprintf("/astria/s/files/jwt/%s/%s/%d/%s/0.vtt",
 				jwt,
 				mux.Vars(r)["sessionID"],
 				s.Stream.StreamId,
