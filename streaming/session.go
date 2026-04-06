@@ -31,12 +31,14 @@ func NewPlaybackSessionManager() (m *PlaybackSessionManager, cleanup func()) {
 
 // DestroyAll destroys all sessions and prevents new ones from being spawned.
 func (m *PlaybackSessionManager) DestroyAll(ctx context.Context) {
+	m.mtx.Lock()
 	m.canCreateSessions = false
 	numWaiting := 0
 	errChannel := make(chan error)
 
 	// Nothing to do if there are no sessions
 	if len(m.sessions) == 0 {
+		m.mtx.Unlock()
 		return
 	}
 
@@ -55,6 +57,7 @@ func (m *PlaybackSessionManager) DestroyAll(ctx context.Context) {
 			errChannel <- err
 		}()
 	}
+	m.mtx.Unlock()
 
 	// Return once either all the sessions have been destroyed or the timeout is
 	// reached
@@ -218,6 +221,9 @@ func (m *PlaybackSessionManager) GetPlaybackSession(
 }
 
 func (m *PlaybackSessionManager) garbageCollectPlaybackSessions() {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
 	// Clean up streams after a user has switched representations, or after they have started a
 	// new playback session for the same stream (e.g. by reloading the page)
 	type uniqueKey struct {
@@ -241,7 +247,9 @@ func (m *PlaybackSessionManager) garbageCollectPlaybackSessions() {
 			}
 			for _, s := range sessions {
 				if s != newestSession {
-					m.removePlaybackSession(s)
+					log.WithFields(log.Fields{"file": s.PlaybackSessionKey.FileLocator, "representationID": s.PlaybackSessionKey.representationID}).Debugln("removing playback session")
+					delete(m.sessions, s.PlaybackSessionKey)
+					s.Release()
 				}
 			}
 		}
